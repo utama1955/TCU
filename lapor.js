@@ -87,16 +87,12 @@ return;
 
 const formData = new FormData();
 
+formData.append("action","createTicket");
 formData.append("nama", nama);
-
 formData.append("cabang", cabang);
-
 formData.append("aset", aset);
-
 formData.append("kategori", kategori);
-
 formData.append("deskripsi", deskripsi);
-
 formData.append("foto", fotoURL);
 
 

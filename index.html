@@ -47,6 +47,18 @@ background:#0d47a1;
 </style>
 
 </head>
+<script>
+const token = localStorage.getItem("token");
+const role  = localStorage.getItem("role");
+
+if(!token){
+  window.location.href="login.html";
+}
+
+if(role === "admin"){
+  window.location.href="admin.html";
+}
+</script>
 
 <body>
 
@@ -55,6 +67,18 @@ background:#0d47a1;
 <img src="Banner Utama.png" class="banner">
 
 <h2>PORTAL MAINTENANCE ASET</h2>
+
+<button onclick="logout()" style="
+background:#e74c3c;
+color:white;
+border:none;
+padding:10px 15px;
+cursor:pointer;
+border-radius:5px;
+margin-bottom:15px;
+">
+Logout
+</button>
 
 
 <a href="lapor.html">
@@ -66,9 +90,16 @@ background:#0d47a1;
 </a>
 
 </div>
-
+<script>
+function logout(){
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+  window.location.href="login.html";
+}
+</script>
 </body>
 </html>
+
 
 
 

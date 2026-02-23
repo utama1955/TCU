@@ -132,6 +132,12 @@ color:#777;
 
 <script>
 const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+
+if(!token || role !== "admin"){
+  alert("Akses ditolak");
+  window.location.href="login.html";
+}
 
 if(!token){
 alert("Silakan login terlebih dahulu");

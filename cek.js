@@ -46,7 +46,7 @@ fetch(API_URL+"?action=list")
 console.log(data);
 
 const found =
-data.find(item => item.status === ticket);
+data.find(item => item.id === ticket);
 
 if(!found){
 
@@ -72,24 +72,22 @@ document.getElementById("hasil").innerHTML=
 
 `
 <div class="label">Ticket ID:</div>
-<div class="value">${found.status}</div>
+<div class="value">${found.id}</div>
 
 <div class="label">Nama Pelapor:</div>
-<div class="value">${found.cabang}</div>
+<div class="value">${found.nama}</div>
 
-<div class="label">Email:</div>
-<div class="value">${found.pelapor}</div>
+<div class="label">Cabang:</div>
+<div class="value">${found.departemen}</div>
 
 <div class="label">Kategori Aset:</div>
 <div class="value">${found.aset}</div>
 
 <div class="label">Status:</div>
-<div class="value ${statusClass}">
-${statusText}
-</div>
+<div class="value ${found.status}"></div>
 
 <div class="label">Foto Kerusakan:</div>
-<img src="${found.ticket_id}">
+<img src="${found.foto}">
 `;
 
 })

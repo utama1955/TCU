@@ -61,7 +61,15 @@ text-align:center;
 </head>
 
 <body>
+<script>
+const token = localStorage.getItem("token");
 
+if(!token){
+  alert("Silakan login terlebih dahulu");
+  window.location.href="login.html";
+}
+</script>
+  
 <div class="container">
 
 <h2>LAPOR KERUSAKAN</h2>
@@ -120,6 +128,7 @@ border-radius:5px;
 
 </body>
 </html>
+
 
 
 

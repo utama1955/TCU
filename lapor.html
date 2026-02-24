@@ -6,54 +6,74 @@
 
 <style>
 
-body {
-font-family: Arial;
-background-color: #f4f6f8;
+body{
+margin:0;
+font-family: Arial, Helvetica, sans-serif;
+background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
 }
 
-.container {
-background-color: white;
-width: 420px;
-margin: 60px auto;
-padding: 25px;
-border-radius: 10px;
-box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+.container{
+background:white;
+width:420px;
+padding:30px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.3);
 }
 
-input, textarea, select {
-width: 100%;
-padding: 10px;
-margin-top: 10px;
-box-sizing: border-box;
-font-size: 14px;
-border: 1px solid #ccc;
-border-radius: 4px;
-background-color: white;
+h2{
+text-align:center;
+margin-top:0;
+color:#333;
 }
 
+input, textarea, select{
+width:100%;
+padding:10px;
+margin-top:10px;
+box-sizing:border-box;
+font-size:14px;
+border:1px solid #ccc;
+border-radius:6px;
+transition:0.3s;
+}
 
-button {
-width: 100%;
-padding: 12px;
-margin-top: 15px;
-background-color:#1976d2;
+input:focus,
+textarea:focus,
+select:focus{
+border-color:#2c5364;
+outline:none;
+box-shadow:0 0 5px rgba(44,83,100,0.5);
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:15px;
+background:#2c5364;
 color:white;
 border:none;
+border-radius:6px;
 cursor:pointer;
+font-size:15px;
+transition:0.3s;
 }
 
-button:hover {
-background-color:#0d47a1;
+button:hover{
+background:#203a43;
 }
 
-#hasil {
-margin-top:15px;
-}
-
-a {
-display:block;
+#hasil{
 margin-top:15px;
 text-align:center;
+}
+
+a{
+display:block;
+margin-top:15px;
 }
 
 </style>
@@ -128,6 +148,7 @@ border-radius:5px;
 
 </body>
 </html>
+
 
 
 

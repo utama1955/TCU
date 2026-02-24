@@ -38,12 +38,13 @@ font-size:20px;
 
 input{
 width:100%;
+max-width:100%;
 padding:14px;
-margin-top:10px;
+margin-top:12px;
 border-radius:6px;
 border:1px solid #ccc;
 font-size:14px;
-transition:0.3s;
+box-sizing:border-box;
 }
 
 input:focus{
@@ -54,15 +55,13 @@ box-shadow:0 0 5px rgba(44,83,100,0.5);
 
 button{
 width:100%;
+max-width:100%;
 padding:14px;
 margin-top:12px;
-background:#2c5364;
-color:white;
-border:none;
 border-radius:6px;
-cursor:pointer;
-font-size:15px;
-transition:0.3s;
+border:1px solid #ccc;
+font-size:14px;
+box-sizing:border-box;
 }
 
 button:hover{
@@ -76,6 +75,10 @@ background:#f9f9f9;
 border-radius:8px;
 font-size:14px;
 word-wrap:break-word;
+}
+
+.container{
+box-sizing:border-box;
 }
 
 .label{

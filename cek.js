@@ -108,6 +108,9 @@ hasil.innerHTML = `
 ${statusText}
 </div>
 
+<div class="label">Catatan GA:</div>
+<div class="value">${data.catatan || "-"}</div>
+
 <div class="label">Vendor:</div>
 <div class="value">${data.vendor || "-"}</div>
 

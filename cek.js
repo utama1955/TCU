@@ -1,3 +1,6 @@
+// ================================
+// FORMAT TANGGAL INDONESIA
+// ================================
 function formatTanggalIndonesia(tanggalISO){
 
 if(!tanggalISO) return "-";
@@ -22,43 +25,55 @@ return tanggalISO;
 
 }
 
-function cekStatus(){
 
-const ticket =
-document.getElementById("ticket").value.trim();
+// ================================
+// GLOBAL LOCK (ANTI DOUBLE CLICK)
+// ================================
+let isChecking = false;
+
+
+// ================================
+// CEK STATUS (PRODUCTION VERSION)
+// ================================
+async function cekStatus(){
+
+if(isChecking) return;
+isChecking = true;
+
+const hasil = document.getElementById("hasil");
+const ticket = document.getElementById("ticket").value.trim();
 
 if(!ticket){
 
 alert("Masukkan Ticket ID");
-
+isChecking = false;
 return;
 
 }
 
-document.getElementById("hasil").innerHTML="Loading...";
+hasil.innerHTML = "Mencari data...";
 
-fetch(API_URL+"?action=list")
+try{
 
-.then(res=>res.json())
+const response = await fetch(
+API_URL + "?action=get&ticket_id=" + encodeURIComponent(ticket)
+);
 
-.then(data=>{
+const data = await response.json();
 
-console.log(data);
+if(!data || data.success === false){
 
-const found =
-data.find(item => item.id === ticket);
-
-if(!found){
-
-document.getElementById("hasil").innerHTML=
-"Ticket tidak ditemukan";
-
+hasil.innerHTML = "<span style='color:red;'>Ticket tidak ditemukan</span>";
+isChecking = false;
 return;
 
 }
 
-let statusText = found.status || "Waiting";
 
+// ================================
+// STATUS CLASS
+// ================================
+let statusText = data.status || "Waiting";
 let statusClass = "status-open";
 
 if(statusText === "On Progress")
@@ -67,37 +82,48 @@ statusClass = "status-progress";
 if(statusText === "Done")
 statusClass = "status-done";
 
-document.getElementById("hasil").innerHTML = `
+
+// ================================
+// RENDER DATA
+// ================================
+hasil.innerHTML = `
 <div class="label">Ticket ID:</div>
-<div class="value">${found.id}</div>
+<div class="value">${ticket}</div>
+
+<div class="label">Tanggal Lapor:</div>
+<div class="value">${formatTanggalIndonesia(data.tanggal)}</div>
 
 <div class="label">Nama Pelapor:</div>
-<div class="value">${found.nama}</div>
+<div class="value">${data.nama || "-"}</div>
 
 <div class="label">Cabang:</div>
-<div class="value">${found.departemen}</div>
+<div class="value">${data.departemen || "-"}</div>
 
-<div class="label">Kategori Aset:</div>
-<div class="value">${found.aset}</div>
+<div class="label">Nama Aset:</div>
+<div class="value">${data.aset || "-"}</div>
 
 <div class="label">Status:</div>
 <div class="value ${statusClass}">
 ${statusText}
 </div>
 
-<div class="label">Foto Kerusakan:</div>
-<img src="${found.foto}">
+<div class="label">Catatan GA:</div>
+<div class="value">${data.catatan || "-"}</div>
+
+<div class="label">Vendor:</div>
+<div class="value">${data.vendor || "-"}</div>
+
+<div class="label">Estimasi Selesai:</div>
+<div class="value">${data.estimasi || "-"}</div>
 `;
 
-})
+}catch(err){
 
-.catch(err=>{
-
-document.getElementById("hasil").innerHTML=
-"Error koneksi server";
-
+hasil.innerHTML = "<span style='color:red;'>Error koneksi server</span>";
 console.error(err);
 
-});
+}
+
+isChecking = false;
 
 }

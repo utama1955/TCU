@@ -2,83 +2,94 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login Admin - Maintenance Aset</title>
 
 <style>
 
-/* Reset dasar */
+/* =============================== */
+/* BODY */
+/* =============================== */
 body{
 margin:0;
 font-family: Arial, Helvetica, sans-serif;
 background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-height:100vh;
+min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
+padding:15px;
+box-sizing:border-box;
 }
 
-/* Container utama */
+/* =============================== */
+/* CONTAINER */
+/* =============================== */
 .login-container{
 background:white;
-width:400px;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.3);
+width:100%;
+max-width:420px;
+border-radius:14px;
+box-shadow:0 15px 30px rgba(0,0,0,0.3);
 overflow:hidden;
 }
 
-/* Banner */
+/* =============================== */
+/* BANNER */
+/* =============================== */
 .banner{
 width:100%;
-height:140px;
+height:150px;
 background:url("Banner Utama.png") center center;
 background-size:cover;
 }
 
-/* Area form */
+/* =============================== */
+/* FORM AREA */
+/* =============================== */
 .form-area{
-padding:30px;
+padding:30px 25px;
 }
 
-/* Judul */
 .form-area h2{
 margin-top:0;
 text-align:center;
 color:#333;
+font-size:20px;
 }
 
-/* Input */
+/* =============================== */
+/* INPUT */
+/* =============================== */
 .form-area input{
-width:90%;
-padding:12px;
-margin-top:10px;
-margin-bottom:15px;
-margin-left:auto;
-margin-right:auto;
-display:block;
-border-radius:6px;
+width:100%;
+padding:14px;
+margin-top:12px;
+border-radius:8px;
 border:1px solid #ccc;
 font-size:14px;
+box-sizing:border-box;
 transition:0.3s;
 }
 
 .form-area input:focus{
 border-color:#2c5364;
 outline:none;
-box-shadow:0 0 5px rgba(44,83,100,0.5);
+box-shadow:0 0 6px rgba(44,83,100,0.4);
 }
 
-/* Tombol */
+/* =============================== */
+/* BUTTON */
+/* =============================== */
 .form-area button{
-width:90%;
-margin-left:auto;
-margin-right:auto;
-display:block;
-padding:12px;
+width:100%;
+padding:14px;
+margin-top:18px;
 background:#2c5364;
 color:white;
 border:none;
-border-radius:6px;
-font-size:16px;
+border-radius:8px;
+font-size:15px;
 cursor:pointer;
 transition:0.3s;
 }
@@ -87,24 +98,47 @@ transition:0.3s;
 background:#203a43;
 }
 
-/* Status */
+/* =============================== */
+/* STATUS */
+/* =============================== */
 #status{
 text-align:center;
-margin-top:10px;
+margin-top:15px;
 font-size:14px;
 color:#333;
+min-height:20px;
 }
 
-/* Footer */
+/* =============================== */
+/* FOOTER */
+/* =============================== */
 .footer{
 text-align:center;
 font-size:12px;
 color:#777;
-margin-top:15px;
+margin-top:20px;
+}
+
+/* =============================== */
+/* MOBILE OPTIMIZATION */
+/* =============================== */
+@media (max-width:480px){
+
+.banner{
+height:130px;
+}
+
+.form-area{
+padding:25px 20px;
+}
+
+.form-area h2{
+font-size:18px;
+}
+
 }
 
 </style>
-
 </head>
 
 <body>
@@ -115,8 +149,8 @@ margin-top:15px;
 
 <div class="form-area">
 
-<h2>Lapor Bolo...</h2>
-  
+<h2>Login System</h2>
+
 <input id="username" placeholder="Username">
 
 <input id="password" type="password" placeholder="Password">
@@ -126,11 +160,10 @@ margin-top:15px;
 <p id="status"></p>
 
 <div class="footer">
-Maintenance Asset System
+Maintenance Asset Management System
 </div>
 
 </div>
-
 </div>
 
 <script>
@@ -138,59 +171,44 @@ Maintenance Asset System
 const API_URL =
 "https://script.google.com/macros/s/AKfycbzt-vfNRb3C26y-5CpWvjfCb5JEQ4g4bwt68kommbCgVnJ7hMgfHWFtie3jj-DGN2Kl/exec";
 
-
 async function login(){
 
 document.getElementById("status").innerText="Memproses login...";
 
-const username =
-document.getElementById("username").value;
+const username=document.getElementById("username").value;
+const password=document.getElementById("password").value;
 
-const password =
-document.getElementById("password").value;
-
-const formData = new FormData();
-
+const formData=new FormData();
 formData.append("action","login");
 formData.append("username",username);
 formData.append("password",password);
 
 try{
 
-const res = await fetch(API_URL,{
-method:"POST",
-body:formData
-});
-
-const data = await res.json();
+const res=await fetch(API_URL,{method:"POST",body:formData});
+const data=await res.json();
 
 if(data.success){
 
-  localStorage.setItem("token", data.token);
-  localStorage.setItem("role", data.role);
+localStorage.setItem("token",data.token);
+localStorage.setItem("role",data.role);
 
-  document.getElementById("status").innerText="Login berhasil";
+document.getElementById("status").innerText="Login berhasil";
 
-  setTimeout(()=>{
-
-    if(data.role === "admin"){
-      window.location.href="admin.html";
-    }else{
-      window.location.href="index.html";
-    }
-
-  },500);
+setTimeout(()=>{
+if(data.role==="admin"){
+window.location.href="admin.html";
+}else{
+window.location.href="index.html";
+}
+},500);
 
 }else{
-
 document.getElementById("status").innerText="Username atau password salah";
-
 }
 
-}catch(err){
-
+}catch{
 document.getElementById("status").innerText="Koneksi gagal";
-
 }
 
 }

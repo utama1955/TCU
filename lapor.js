@@ -1,19 +1,13 @@
 async function uploadFoto(file){
 
 if(!file){
-
 alert("Pilih foto terlebih dahulu");
-
 return null;
-
 }
 
 const formData = new FormData();
-formData.append("kategori", kategori);
 formData.append("file", file);
-formData.append("upload_preset",
-CLOUDINARY_UPLOAD_PRESET
-);
+formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
 try{
 
@@ -27,19 +21,20 @@ body:formData
 
 const data = await response.json();
 
+if(!data.secure_url){
+return null;
+}
+
 return data.secure_url;
 
 }catch(error){
 
 alert("Upload foto gagal");
-
 return null;
 
 }
 
 }
-
-
 
 async function kirimLaporan(){
 

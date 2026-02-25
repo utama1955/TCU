@@ -13,26 +13,6 @@ font-family:Arial,Helvetica,sans-serif;
 background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 }
 
-.desc-box{
-position:relative;
-}
-
-.close-btn{
-position:absolute;
-top:12px;
-right:15px;
-font-size:22px;
-font-weight:bold;
-color:#e74c3c;
-cursor:pointer;
-transition:0.2s;
-}
-
-.close-btn:hover{
-color:#c0392b;
-transform:scale(1.1);
-}
-  
 .container{
 width:95%;
 max-width:1300px;
@@ -141,12 +121,35 @@ max-width:500px;
 padding:25px;
 border-radius:14px;
 box-shadow:0 20px 40px rgba(0,0,0,0.35);
+position:relative;
+animation:fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn{
+from{opacity:0; transform:scale(0.95);}
+to{opacity:1; transform:scale(1);}
 }
 
 .modal-content h3{
 text-align:center;
 color:#2c5364;
 margin-bottom:20px;
+}
+
+.close-btn{
+position:absolute;
+top:12px;
+right:15px;
+font-size:22px;
+font-weight:bold;
+color:#e74c3c;
+cursor:pointer;
+transition:0.2s;
+}
+
+.close-btn:hover{
+color:#c0392b;
+transform:scale(1.1);
 }
 
 .modal-content label{
@@ -167,16 +170,17 @@ margin-top:5px;
 box-sizing:border-box;
 }
 
-.modal-content button{
+.save-btn{
 width:100%;
 padding:12px;
-margin-top:12px;
+margin-top:15px;
 border-radius:8px;
 font-weight:600;
+background:#27ae60;
+color:white;
+border:none;
+cursor:pointer;
 }
-
-.save-btn{background:#27ae60;}
-.cancel-btn{background:#95a5a6;}
 
 .footer{
 text-align:center;
@@ -246,8 +250,9 @@ Maintenance Asset Management System
 </div>
 
 <!-- MODAL EDIT -->
-<div id="editModal" class="modal">
+<div id="editModal" class="modal" onclick="overlayClose(event,'editModal')">
 <div class="modal-content">
+<span class="close-btn" onclick="closeModal('editModal')">&times;</span>
 <h3>Edit Ticket</h3>
 
 <label>Ticket ID</label>
@@ -268,25 +273,21 @@ Maintenance Asset Management System
 <input id="edit_vendor">
 
 <button class="save-btn" onclick="saveEdit()">Save</button>
-<button class="cancel-btn" onclick="closeModal()">Cancel</button>
 </div>
 </div>
 
 <!-- MODAL DESKRIPSI -->
-<div id="descModal" class="modal">
-<div class="modal-content desc-box">
-
-<span class="close-btn" onclick="closeDescModal()">&times;</span>
-
-<h3>Deskripsi Kerusakan</h3><br>
+<div id="descModal" class="modal" onclick="overlayClose(event,'descModal')">
+<div class="modal-content">
+<span class="close-btn" onclick="closeModal('descModal')">&times;</span>
+<h3>Deskripsi Kerusakan</h3>
 <div id="descContent" style="margin-top:15px; line-height:1.6;"></div>
-
 </div>
 </div>
 
 <script>
 
-const API_URL="https://script.google.com/macros/s/AKfycbxWLiPuxIFd6Hy0PKUtx-mbgm_o2bWCT7Mog9wk1TGIszu-v7r8RvKfZLDDUvtSvhIC6w/exec";
+const API_URL="YOUR_WEB_APP_URL";
 
 let allTickets=[];
 
@@ -306,8 +307,6 @@ d.getFullYear();
 }
 
 async function loadData(){
-const tbody=document.querySelector("#tabel tbody");
-tbody.innerHTML="<tr><td colspan='9'>Loading...</td></tr>";
 const res=await fetch(API_URL+"?action=list");
 allTickets=await res.json();
 renderTable(allTickets);
@@ -318,7 +317,6 @@ const tbody=document.querySelector("#tabel tbody");
 tbody.innerHTML="";
 
 data.forEach(row=>{
-
 const status=row.status||"Waiting";
 let statusClass="waiting";
 if(status==="Pending") statusClass="pending";
@@ -348,7 +346,7 @@ ${status==="Done"?"Close":"Edit"}
 
 function applyFilter(){
 const selected=document.getElementById("filterStatus").value;
-if(selected==="All"){ renderTable(allTickets); return; }
+if(selected==="All"){renderTable(allTickets);return;}
 renderTable(allTickets.filter(t=>t.status===selected));
 }
 
@@ -356,10 +354,6 @@ function showDescription(desc){
 document.getElementById("descContent").innerText=
 decodeURIComponent(desc)||"Tidak ada deskripsi.";
 document.getElementById("descModal").style.display="flex";
-}
-
-function closeDescModal(){
-document.getElementById("descModal").style.display="none";
 }
 
 function openEditModal(ticket,status){
@@ -372,28 +366,29 @@ document.getElementById("edit_status").value=status;
 document.getElementById("editModal").style.display="flex";
 }
 
-function closeModal(){
-document.getElementById("editModal").style.display="none";
+function closeModal(id){
+document.getElementById(id).style.display="none";
+}
+
+function overlayClose(event,id){
+if(event.target.id===id){
+closeModal(id);
+}
 }
 
 async function saveEdit(){
-const ticket_id=document.getElementById("edit_ticket").value;
-const status=document.getElementById("edit_status").value;
-const catatan=document.getElementById("edit_catatan").value;
-const vendor=document.getElementById("edit_vendor").value;
-
 const formData=new FormData();
 formData.append("action","updateTicket");
-formData.append("ticket_id",ticket_id);
-formData.append("status",status);
-formData.append("catatan",catatan);
-formData.append("vendor",vendor);
+formData.append("ticket_id",document.getElementById("edit_ticket").value);
+formData.append("status",document.getElementById("edit_status").value);
+formData.append("catatan",document.getElementById("edit_catatan").value);
+formData.append("vendor",document.getElementById("edit_vendor").value);
 
 const res=await fetch(API_URL,{method:"POST",body:formData});
 const result=await res.json();
 
 if(result.success){
-closeModal();
+closeModal('editModal');
 loadData();
 }else{
 alert("Update gagal");

@@ -272,7 +272,7 @@ tbody.innerHTML+=`
 <td>${row.aset||"-"}</td>
 <td><span class="status ${statusClass}">${status}</span></td>
 <td>${row.vendor||"-"}</td>
-<td>${row.update||"-"}</td>
+<td>${formatTanggalIndonesia(row.update)}</td>
 <td>
 <button ${disabled} onclick="openEditModal('${row.id}','${status}')">
 ${status==="Done" ? "Locked" : "Edit"}
@@ -327,7 +327,27 @@ loadData();
 alert("Update gagal");
 }
 }
+function formatTanggalIndonesia(tanggalISO){
 
+if(!tanggalISO) return "-";
+
+try{
+
+const tanggal = new Date(tanggalISO);
+
+if(isNaN(tanggal)) return "-";
+
+const day = String(tanggal.getDate()).padStart(2,'0');
+const month = String(tanggal.getMonth()+1).padStart(2,'0');
+const year = tanggal.getFullYear();
+
+return `${day}/${month}/${year}`;
+
+}catch{
+return "-";
+}
+
+}
 loadData();
 
 </script>

@@ -1,12 +1,12 @@
-// ================================
+// ========================================
 // GLOBAL LOCK (ANTI DOUBLE SUBMIT)
-// ================================
+// ========================================
 let isProcessing = false;
 
 
-// ================================
+// ========================================
 // SANITASI INPUT
-// ================================
+// ========================================
 function cleanInput(text){
 return text
 .replace(/</g,"&lt;")
@@ -14,15 +14,12 @@ return text
 }
 
 
-// ================================
+// ========================================
 // UPLOAD FOTO KE CLOUDINARY
-// ================================
+// ========================================
 async function uploadFoto(file){
 
-if(!file){
-alert("Pilih foto terlebih dahulu");
-return null;
-}
+if(!file) return null;
 
 const formData = new FormData();
 formData.append("file", file);
@@ -44,17 +41,15 @@ return null;
 return data.secure_url;
 
 }catch(error){
-
 return null;
-
 }
 
 }
 
 
-// ================================
-// KIRIM LAPORAN (PRODUCTION FLOW)
-// ================================
+// ========================================
+// KIRIM LAPORAN
+// ========================================
 async function kirimLaporan(){
 
 if(isProcessing) return;
@@ -68,9 +63,9 @@ btn.innerText = "Memproses...";
 
 try{
 
-// ================================
+// =============================
 // AMBIL DATA FORM
-// ================================
+// =============================
 const nama = document.getElementById("nama").value.trim();
 const cabang = document.getElementById("cabang").value.trim();
 const aset = document.getElementById("aset").value.trim();
@@ -79,65 +74,51 @@ const deskripsi = document.getElementById("deskripsi").value.trim();
 const file = document.getElementById("foto").files[0];
 
 
-// ================================
-// VALIDASI WAJIB ISI
-// ================================
+// =============================
+// VALIDASI WAJIB
+// =============================
 if(!nama || !cabang || !aset || !kategori || !deskripsi){
 alert("Semua field wajib diisi");
-resetButton();
-return;
+return resetButton();
 }
 
-
-// ================================
-// VALIDASI PANJANG KARAKTER
-// ================================
 if(nama.length < 3){
 alert("Nama minimal 3 karakter");
-resetButton();
-return;
+return resetButton();
 }
 
 if(deskripsi.length < 10){
 alert("Deskripsi minimal 10 karakter");
-resetButton();
-return;
+return resetButton();
 }
 
-
-// ================================
-// VALIDASI FILE
-// ================================
 if(!file){
 alert("Foto wajib diupload");
-resetButton();
-return;
+return resetButton();
 }
 
 if(file.size > 2 * 1024 * 1024){
 alert("Ukuran foto maksimal 2MB");
-resetButton();
-return;
+return resetButton();
 }
 
 
-// ================================
+// =============================
 // UPLOAD FOTO
-// ================================
+// =============================
 hasil.innerHTML = "Upload foto...";
 
 const fotoURL = await uploadFoto(file);
 
 if(!fotoURL){
 hasil.innerHTML = "<span style='color:red;'>Gagal upload foto</span>";
-resetButton();
-return;
+return resetButton();
 }
 
 
-// ================================
-// KIRIM DATA KE APPS SCRIPT
-// ================================
+// =============================
+// KIRIM KE APPS SCRIPT
+// =============================
 hasil.innerHTML = "Mengirim laporan...";
 
 const formData = new FormData();
@@ -157,16 +138,19 @@ body:formData
 
 const data = await response.json();
 
+
+// =============================
+// HANDLE RESPONSE
+// =============================
 if(data.success){
 
-hasil.innerHTML = `
-<span style="color:green;">
-Laporan berhasil dikirim<br>
-Ticket ID: <b>${data.ticket_id}</b>
-</span>
-`;
+// tampilkan modal sukses
+document.getElementById("modalTicketID").innerText = data.ticket_id;
+document.getElementById("successModal").style.display = "flex";
 
+// reset form
 document.getElementById("formLapor").reset();
+hasil.innerHTML = "";
 
 }else{
 
@@ -186,12 +170,20 @@ resetButton();
 }
 
 
-// ================================
+// ========================================
 // RESET BUTTON STATE
-// ================================
+// ========================================
 function resetButton(){
 const btn = document.getElementById("btnKirim");
 btn.disabled = false;
 btn.innerText = "KIRIM LAPORAN";
 isProcessing = false;
+}
+
+
+// ========================================
+// TUTUP MODAL SUCCESS
+// ========================================
+function closeSuccessModal(){
+document.getElementById("successModal").style.display = "none";
 }

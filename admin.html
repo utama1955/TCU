@@ -6,15 +6,12 @@
 <title>Admin Panel - Maintenance Aset</title>
 
 <style>
-
-/* ================= BODY ================= */
 body{
 margin:0;
 font-family:Arial,Helvetica,sans-serif;
 background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 }
 
-/* ================= CONTAINER ================= */
 .container{
 width:95%;
 max-width:1200px;
@@ -25,7 +22,6 @@ box-shadow:0 10px 25px rgba(0,0,0,0.3);
 overflow:hidden;
 }
 
-/* ================= HEADER ================= */
 .header{
 display:flex;
 justify-content:space-between;
@@ -44,13 +40,11 @@ border-radius:6px;
 cursor:pointer;
 }
 
-/* ================= CONTENT ================= */
 .content{
 padding:25px;
 overflow-x:auto;
 }
 
-/* ================= TABLE ================= */
 table{
 width:100%;
 min-width:900px;
@@ -63,20 +57,17 @@ background:#2c5364;
 color:white;
 padding:12px;
 text-align:left;
-white-space:nowrap;
 }
 
 td{
 padding:12px;
 border-bottom:1px solid #eee;
-white-space:nowrap;
 }
 
 tr:hover{
 background:#f8f8f8;
 }
 
-/* ================= STATUS BADGE ================= */
 .status{
 padding:4px 10px;
 border-radius:20px;
@@ -86,35 +77,10 @@ font-weight:600;
 }
 
 .waiting{background:#f39c12;}
+.pending{background:#9b59b6;}
 .process{background:#3498db;}
 .done{background:#27ae60;}
 
-/* ================= PRIORITY BADGE ================= */
-.priority-high{
-background:#e74c3c;
-color:white;
-padding:4px 10px;
-border-radius:20px;
-font-size:12px;
-}
-
-.priority-medium{
-background:#f39c12;
-color:white;
-padding:4px 10px;
-border-radius:20px;
-font-size:12px;
-}
-
-.priority-low{
-background:#95a5a6;
-color:white;
-padding:4px 10px;
-border-radius:20px;
-font-size:12px;
-}
-
-/* ================= BUTTON ================= */
 button{
 padding:6px 12px;
 border:none;
@@ -124,15 +90,12 @@ background:#2c5364;
 color:white;
 }
 
-/* ================= FOOTER ================= */
-.footer{
-text-align:center;
-padding:15px;
-font-size:12px;
-color:#777;
+button:disabled{
+background:#bdc3c7;
+cursor:not-allowed;
 }
 
-/* ================= MODAL ================= */
+/* MODAL */
 .modal{
 display:none;
 position:fixed;
@@ -141,7 +104,6 @@ top:0;
 width:100%;
 height:100%;
 background:rgba(0,0,0,0.55);
-display:flex;
 justify-content:center;
 align-items:center;
 z-index:1000;
@@ -157,20 +119,16 @@ box-shadow:0 20px 40px rgba(0,0,0,0.35);
 }
 
 .modal-content h3{
-margin-top:0;
-margin-bottom:20px;
-font-size:20px;
-color:#2c5364;
 text-align:center;
+color:#2c5364;
+margin-bottom:20px;
 }
 
 .modal-content label{
 display:block;
+margin-top:12px;
 font-size:13px;
 font-weight:600;
-margin-top:12px;
-margin-bottom:5px;
-color:#555;
 }
 
 .modal-content input,
@@ -180,7 +138,7 @@ width:100%;
 padding:12px;
 border-radius:8px;
 border:1px solid #ccc;
-font-size:14px;
+margin-top:5px;
 box-sizing:border-box;
 }
 
@@ -195,6 +153,12 @@ font-weight:600;
 .save-btn{background:#27ae60;}
 .cancel-btn{background:#95a5a6;}
 
+.footer{
+text-align:center;
+padding:15px;
+font-size:12px;
+color:#777;
+}
 </style>
 </head>
 
@@ -218,38 +182,31 @@ window.location.href="login.html";
 </div>
 
 <div class="content">
-
 <table id="tabel">
 <thead>
 <tr>
 <th>Ticket</th>
 <th>Pelapor</th>
 <th>Aset</th>
-<th>Prioritas</th>
 <th>Status</th>
 <th>Vendor</th>
-<th>PIC</th>
 <th>Update</th>
 <th>Action</th>
 </tr>
 </thead>
 <tbody>
-<tr>
-<td colspan="9">Loading...</td>
-</tr>
+<tr><td colspan="7">Loading...</td></tr>
 </tbody>
 </table>
-
 </div>
 
 <div class="footer">
 Maintenance Asset Management System
 </div>
-
 </div>
 
-<!-- ================= MODAL ================= -->
-<div id="editModal" class="modal" style="display:none;">
+<!-- MODAL -->
+<div id="editModal" class="modal">
 <div class="modal-content">
 
 <h3>Edit Ticket</h3>
@@ -260,6 +217,7 @@ Maintenance Asset Management System
 <label>Status</label>
 <select id="edit_status">
 <option value="Waiting">Waiting</option>
+<option value="Pending">Pending</option>
 <option value="On Progress">On Progress</option>
 <option value="Done">Done</option>
 </select>
@@ -270,7 +228,7 @@ Maintenance Asset Management System
 <label>Vendor</label>
 <input id="edit_vendor">
 
-<button class="save-btn" onclick="saveEdit()">Save</button>
+<button class="save-btn" id="saveBtn" onclick="saveEdit()">Save</button>
 <button class="cancel-btn" onclick="closeModal()">Cancel</button>
 
 </div>
@@ -278,7 +236,7 @@ Maintenance Asset Management System
 
 <script>
 
-const API_URL="https://script.google.com/macros/s/AKfycbxiqUALCm4uVcdq0u8OkpgFizTUutybk_gD_l7giGOWECyEvNNNb9XGeb4XMKFEeCHGTg/exec";
+const API_URL="YOUR_WEB_APP_URL_HERE";
 
 function logout(){
 localStorage.removeItem("token");
@@ -288,7 +246,7 @@ window.location.href="login.html";
 
 async function loadData(){
 const tbody=document.querySelector("#tabel tbody");
-tbody.innerHTML="<tr><td colspan='9'>Loading...</td></tr>";
+tbody.innerHTML="<tr><td colspan='7'>Loading...</td></tr>";
 
 try{
 const res=await fetch(API_URL+"?action=list");
@@ -297,49 +255,46 @@ tbody.innerHTML="";
 
 data.forEach(row=>{
 
-const ticketId=row.id||"-";
-const nama=row.nama||"-";
-const aset=row.aset||"-";
 const status=row.status||"Waiting";
-const vendor=row.vendor||"-";
-const prioritas=row.prioritas||"Low";
-const pic=row.pic||"-";
-const update=row.update||"-";
 
 let statusClass="waiting";
+if(status==="Pending") statusClass="pending";
 if(status==="On Progress") statusClass="process";
 if(status==="Done") statusClass="done";
 
-let priorityClass="priority-low";
-if(prioritas==="High") priorityClass="priority-high";
-if(prioritas==="Medium") priorityClass="priority-medium";
+const disabled = status==="Done" ? "disabled" : "";
 
 tbody.innerHTML+=`
 <tr>
-<td>${ticketId}</td>
-<td>${nama}</td>
-<td>${aset}</td>
-<td><span class="${priorityClass}">${prioritas}</span></td>
+<td>${row.id||"-"}</td>
+<td>${row.nama||"-"}</td>
+<td>${row.aset||"-"}</td>
 <td><span class="status ${statusClass}">${status}</span></td>
-<td>${vendor}</td>
-<td>${pic}</td>
-<td>${update}</td>
-<td><button onclick="openEditModal('${ticketId}','${status}')">Edit</button></td>
+<td>${row.vendor||"-"}</td>
+<td>${row.update||"-"}</td>
+<td>
+<button ${disabled} onclick="openEditModal('${row.id}','${status}')">
+${status==="Done" ? "Locked" : "Edit"}
+</button>
+</td>
 </tr>
 `;
-
 });
 
 }catch{
-tbody.innerHTML="<tr><td colspan='9'>Gagal memuat data</td></tr>";
+tbody.innerHTML="<tr><td colspan='7'>Gagal memuat data</td></tr>";
 }
 }
 
 function openEditModal(ticket,status){
+
+if(status==="Done"){
+alert("Ticket sudah selesai dan tidak dapat diedit.");
+return;
+}
+
 document.getElementById("edit_ticket").value=ticket;
 document.getElementById("edit_status").value=status;
-document.getElementById("edit_catatan").value="";
-document.getElementById("edit_vendor").value="";
 document.getElementById("editModal").style.display="flex";
 }
 
@@ -354,25 +309,26 @@ const status=document.getElementById("edit_status").value;
 const catatan=document.getElementById("edit_catatan").value;
 const vendor=document.getElementById("edit_vendor").value;
 
+if(status==="Done"){
+alert("Ticket Done tidak dapat diubah kembali.");
+return;
+}
+
 const formData=new FormData();
 formData.append("action","updateTicket");
 formData.append("ticket_id",ticket_id);
 formData.append("status",status);
 formData.append("catatan",catatan);
 formData.append("vendor",vendor);
-formData.append("estimasi","");
 
-try{
 const res=await fetch(API_URL,{method:"POST",body:formData});
 const result=await res.json();
+
 if(result.success){
 closeModal();
 loadData();
 }else{
 alert("Update gagal");
-}
-}catch{
-alert("Error koneksi");
 }
 }
 

@@ -116,6 +116,15 @@ ${statusText}
 
 <div class="label">Estimasi Selesai:</div>
 <div class="value">${data.estimasi || "-"}</div>
+
+<div class="label">Foto Pelaporan:</div>
+<div class="value">
+${
+data.foto
+? `<img src="${data.foto}" alt="Foto Laporan">`
+: "-"
+}
+</div>
 `;
 
 }catch(err){

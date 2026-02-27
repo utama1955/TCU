@@ -115,13 +115,21 @@ font-size:14px;
 <script>
 const token = localStorage.getItem("token");
 const role  = localStorage.getItem("role");
+const username = localStorage.getItem("username");
 
 if(!token){
   window.location.href="login.html";
 }
 
+// Redirect admin tetap ke admin panel
 if(role === "admin"){
   window.location.href="admin.html";
+}
+
+// Proteksi password default
+const userPassword = localStorage.getItem("userPassword");
+if(userPassword === "password123"){
+  window.location.href="ubah-password.html";
 }
 </script>
 
@@ -132,6 +140,18 @@ if(role === "admin"){
 <img src="Banner Utama.png" class="banner">
 
 <h2>LAPOR BOLO...</h2>
+
+<div id="userInfo" style="margin-bottom:20px; font-size:14px; text-align:left;"></div>
+
+<div id="summaryBox" style="
+margin-bottom:20px;
+padding:12px;
+background:#f4f6f7;
+border-radius:8px;
+font-size:13px;
+text-align:left;
+display:none;
+"></div>
 
 <a href="lapor.html">
 <button>LAPOR KERUSAKAN</button>
@@ -158,8 +178,63 @@ window.location.href="login.html";
 }
 </script>
 
+<script src="config.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+const username = localStorage.getItem("username");
+const role = localStorage.getItem("role");
+
+const userInfo = document.getElementById("userInfo");
+const summaryBox = document.getElementById("summaryBox");
+
+if(username){
+  userInfo.innerHTML = `
+  <strong>Selamat datang, ${username}</strong><br>
+  Role: ${role}
+  `;
+}
+
+// =============================
+// AMBIL DATA TICKET USER
+// =============================
+fetch(API_URL + "?action=list")
+.then(res => res.json())
+.then(data => {
+
+  if(!Array.isArray(data)) return;
+
+  const userTickets = data.filter(t => t.nama === username);
+
+  if(userTickets.length === 0) return;
+
+  let waiting = 0;
+  let progress = 0;
+  let done = 0;
+
+  userTickets.forEach(t => {
+    if(t.status === "Waiting") waiting++;
+    else if(t.status === "On Progress") progress++;
+    else if(t.status === "Done") done++;
+  });
+
+  summaryBox.style.display = "block";
+  summaryBox.innerHTML = `
+  <strong>Ringkasan Laporan Anda:</strong><br>
+  🟡 Waiting: ${waiting}<br>
+  🔵 On Progress: ${progress}<br>
+  🟢 Done: ${done}
+  `;
+
+});
+
+});
+</script>
+  
 </body>
 </html>
+
 
 
 

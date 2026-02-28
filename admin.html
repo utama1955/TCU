@@ -210,8 +210,27 @@ if(role !== "admin"){
 <div class="container">
 
 <div class="header">
-<h2>Admin Panel - Maintenance Aset</h2>
+
+<div style="display:flex;align-items:center;gap:15px;">
+
+<button onclick="goBack()" 
+style="
+background:transparent;
+border:none;
+color:white;
+font-size:22px;
+cursor:pointer;
+padding:0;
+">
+←
+</button>
+
+<h2 style="margin:0;">Admin Panel - Maintenance Aset</h2>
+
+</div>
+
 <button class="logout-btn" onclick="logout()">Logout</button>
+
 </div>
 
 <div class="content">
@@ -295,6 +314,10 @@ const API_URL="https://script.google.com/macros/s/AKfycbxWB6oZ2jIyyVQjUjUx76BaCq
 
 let allTickets=[];
 
+function goBack(){
+window.location.href="index.html";
+}
+  
 function logout(){
 localStorage.clear();
 window.location.href="login.html";

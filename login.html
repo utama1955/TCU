@@ -219,9 +219,11 @@ if(data.success){
 localStorage.setItem("token",data.token);
 localStorage.setItem("role",data.role);
 localStorage.setItem("username",username);
-localStorage.setItem("userPassword",password);
 
-document.getElementById("status").innerText="Login berhasil";
+if(data.must_change_password){
+  window.location.href="ubah-password.html";
+  return;
+}
 
 setTimeout(()=>{
 if(data.role==="admin"){

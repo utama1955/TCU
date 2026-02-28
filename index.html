@@ -3,29 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lapor Bolo...</title>
+<title>Lapor Bolo</title>
 <link rel="icon" type="image/png" href="icon.png">
 
 <style>
-
-/* =============================== */
-/* BODY */
-/* =============================== */
 body{
 margin:0;
-font-family: Arial, Helvetica, sans-serif;
-background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+font-family:Arial,Helvetica,sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 min-height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
 padding:15px;
-box-sizing:border-box;
 }
 
-/* =============================== */
-/* CONTAINER */
-/* =============================== */
 .container{
 background:white;
 width:100%;
@@ -34,31 +26,20 @@ border-radius:14px;
 box-shadow:0 15px 30px rgba(0,0,0,0.3);
 padding:30px 25px;
 text-align:center;
-box-sizing:border-box;
 }
 
-/* =============================== */
-/* BANNER */
-/* =============================== */
 .banner{
 width:100%;
 margin-bottom:20px;
 border-radius:10px;
 }
 
-/* =============================== */
-/* TITLE */
-/* =============================== */
 h2{
 margin-top:0;
 margin-bottom:25px;
 font-size:20px;
-color:#333;
 }
 
-/* =============================== */
-/* BUTTON */
-/* =============================== */
 button{
 width:100%;
 padding:15px;
@@ -68,68 +49,33 @@ color:white;
 border:none;
 border-radius:8px;
 cursor:pointer;
-font-size:15px;
 font-weight:600;
-transition:0.3s;
 }
 
 button:hover{
 background:#203a43;
 }
 
-/* =============================== */
-/* LOGOUT BUTTON */
-/* =============================== */
+.admin-btn{
+background:#8e44ad;
+}
+
 .logout-btn{
 background:#e74c3c;
-margin-top:20px;
 }
-
-.logout-btn:hover{
-background:#c0392b;
-}
-
-/* =============================== */
-/* MOBILE OPTIMIZATION */
-/* =============================== */
-@media (max-width:480px){
-
-.container{
-padding:25px 20px;
-}
-
-h2{
-font-size:18px;
-}
-
-button{
-padding:16px;
-font-size:14px;
-}
-
-}
-
 </style>
 </head>
 
+<body>
+
 <script>
 const token = localStorage.getItem("token");
-const role  = localStorage.getItem("role");
-const username = localStorage.getItem("username");
+const role = localStorage.getItem("role");
 
 if(!token){
   window.location.href="login.html";
 }
-
-// Redirect admin tetap ke admin panel
-if(role === "admin"){
-  window.location.href="admin.html";
-}
-
-
 </script>
-
-<body>
 
 <div class="container">
 
@@ -137,17 +83,7 @@ if(role === "admin"){
 
 <h2>LAPOR BOLO...</h2>
 
-<div id="userInfo" style="margin-bottom:20px; font-size:14px; text-align:left;"></div>
-
-<div id="summaryBox" style="
-margin-bottom:20px;
-padding:12px;
-background:#f4f6f7;
-border-radius:8px;
-font-size:13px;
-text-align:left;
-display:none;
-"></div>
+<div id="userInfo" style="margin-bottom:20px;text-align:left;font-size:14px;"></div>
 
 <a href="lapor.html">
 <button>LAPOR KERUSAKAN</button>
@@ -156,84 +92,43 @@ display:none;
 <a href="cek.html">
 <button>CEK STATUS</button>
 </a>
-  
-<a href="ubah-password.html">
-<button style="background:#f39c12;">
-UBAH PASSWORD
-</button>
+
+<div id="adminSection" style="display:none;">
+<a href="admin.html">
+<button class="admin-btn">⚙ PANEL ADMIN</button>
 </a>
+</div>
+
+<a href="ubah-password.html">
+<button style="background:#f39c12;">UBAH PASSWORD</button>
+</a>
+
 <button class="logout-btn" onclick="logout()">Logout</button>
-  
+
 </div>
 
 <script>
 function logout(){
-localStorage.removeItem("token");
-localStorage.removeItem("role");
+localStorage.clear();
 window.location.href="login.html";
 }
-</script>
 
-<script src="config.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded",function(){
 
 const username = localStorage.getItem("username");
 const role = localStorage.getItem("role");
 
-const userInfo = document.getElementById("userInfo");
-const summaryBox = document.getElementById("summaryBox");
-
 if(username){
-  userInfo.innerHTML = `
-  <strong>Selamat datang, ${username}</strong><br>
-  Role: ${role}
-  `;
+document.getElementById("userInfo").innerHTML=
+"<strong>Selamat datang, "+username+"</strong><br>Role: "+role;
 }
 
-// =============================
-// AMBIL DATA TICKET USER
-// =============================
-fetch(API_URL + "?action=list")
-.then(res => res.json())
-.then(data => {
-
-  if(!Array.isArray(data)) return;
-
-  const userTickets = data.filter(t => t.nama === username);
-
-  if(userTickets.length === 0) return;
-
-  let waiting = 0;
-  let progress = 0;
-  let done = 0;
-
-  userTickets.forEach(t => {
-    if(t.status === "Waiting") waiting++;
-    else if(t.status === "On Progress") progress++;
-    else if(t.status === "Done") done++;
-  });
-
-  summaryBox.style.display = "block";
-  summaryBox.innerHTML = `
-  <strong>Ringkasan Laporan Anda:</strong><br>
-  🟡 Waiting: ${waiting}<br>
-  🔵 On Progress: ${progress}<br>
-  🟢 Done: ${done}
-  `;
-
-});
+if(role === "admin"){
+document.getElementById("adminSection").style.display="block";
+}
 
 });
 </script>
-  
+
 </body>
 </html>
-
-
-
-
-
-
-

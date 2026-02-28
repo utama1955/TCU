@@ -206,8 +206,16 @@ formData.append("password",password);
 
 try{
 
-const res=await fetch(API_URL,{method:"POST",body:formData});
-const data=await res.json();
+const res = await fetch(API_URL,{
+  method:"POST",
+  headers:{
+    "Content-Type":"application/x-www-form-urlencoded"
+  },
+  body:
+    "action=login" +
+    "&username=" + encodeURIComponent(username) +
+    "&password=" + encodeURIComponent(password)
+});
 
 if(data.success){
 

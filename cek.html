@@ -11,61 +11,95 @@ body{
 margin:0;
 font-family:Arial,Helvetica,sans-serif;
 background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+min-height:100vh;
 padding:20px;
+box-sizing:border-box;
 }
 
 .container{
-max-width:800px;
+max-width:750px;
 margin:auto;
 background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.3);
+padding:30px;
+border-radius:14px;
+box-shadow:0 15px 30px rgba(0,0,0,0.3);
 }
 
 h2{
-margin-top:0;
 text-align:center;
+margin-top:0;
+margin-bottom:25px;
 }
 
 .section{
-margin-top:25px;
+margin-bottom:30px;
 }
 
-.section h3{
-margin-bottom:10px;
-padding:8px 12px;
-border-radius:6px;
+.section-title{
+padding:10px 15px;
+border-radius:8px;
 color:white;
-font-size:15px;
+font-weight:bold;
+font-size:14px;
+margin-bottom:12px;
+display:inline-block;
 }
 
-.waiting{background:#f39c12;}
-.process{background:#3498db;}
-.pending{background:#9b59b6;}
-.done{background:#27ae60;}
+.waiting{ background:#f39c12; }
+.process{ background:#3498db; }
+.pending{ background:#9b59b6; }
+.done{ background:#27ae60; }
 
 .card{
 background:#f8f8f8;
-padding:12px;
+padding:15px;
+border-radius:10px;
 margin-bottom:10px;
-border-radius:8px;
-font-size:14px;
+border:1px solid #eee;
+transition:0.2s;
+}
+
+.card:hover{
+background:#f1f1f1;
+transform:translateY(-2px);
 }
 
 .ticket-id{
 font-weight:bold;
-margin-bottom:5px;
+margin-bottom:6px;
+}
+
+.label{
+font-size:13px;
+color:#555;
+}
+
+.value{
+margin-bottom:6px;
+font-size:14px;
 }
 
 .back-btn{
 margin-top:20px;
+width:100%;
+padding:12px;
 background:#6c757d;
 color:white;
 border:none;
-padding:10px;
-border-radius:6px;
+border-radius:8px;
 cursor:pointer;
+font-weight:600;
+}
+
+.back-btn:hover{
+background:#5a6268;
+}
+
+.empty{
+text-align:center;
+color:#777;
+font-size:14px;
+margin-top:20px;
 }
 
 </style>
@@ -87,81 +121,13 @@ window.location.href="login.html";
 <div id="content"></div>
 
 <button class="back-btn" onclick="window.location.href='index.html'">
-← Kembali
+← Kembali ke Menu Utama
 </button>
 
 </div>
 
 <script src="config.js"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", async function(){
-
-const username = localStorage.getItem("username");
-const content = document.getElementById("content");
-
-if(!username){
-content.innerHTML="Session tidak valid";
-return;
-}
-
-const res = await fetch(API_URL+"?action=list");
-const data = await res.json();
-
-if(!Array.isArray(data)){
-content.innerHTML="Gagal memuat data";
-return;
-}
-
-const myTickets = data.filter(t => t.nama === username);
-
-if(myTickets.length === 0){
-content.innerHTML="Anda belum memiliki laporan.";
-return;
-}
-
-renderSection("Waiting","waiting");
-renderSection("On Progress","process");
-renderSection("Pending","pending");
-renderSection("Done","done");
-
-function renderSection(status,labelClass){
-
-const group = myTickets.filter(t => t.status === status);
-if(group.length === 0) return;
-
-let html = `
-<div class="section">
-<h3 class="${labelClass}">${status}</h3>
-`;
-
-group.forEach(t=>{
-html += `
-<div class="card">
-<div class="ticket-id">${t.id}</div>
-<div><strong>Aset:</strong> ${t.aset}</div>
-<div><strong>Cabang:</strong> ${t.departemen}</div>
-<div><strong>Update:</strong> ${formatTanggal(t.update)}</div>
-</div>
-`;
-});
-
-html += `</div>`;
-
-content.innerHTML += html;
-}
-
-function formatTanggal(date){
-if(!date) return "-";
-const d = new Date(date);
-if(isNaN(d)) return "-";
-return d.getDate().toString().padStart(2,'0')+"/"+
-(d.getMonth()+1).toString().padStart(2,'0')+"/"+
-d.getFullYear();
-}
-
-});
-</script>
+<script src="cek.js"></script>
 
 </body>
 </html>

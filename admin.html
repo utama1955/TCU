@@ -409,6 +409,7 @@ closeModal(id);
 async function saveEdit(){
 const formData=new FormData();
 formData.append("action","updateTicket");
+formData.append("token", localStorage.getItem("token")); // ← TAMBAHAN
 formData.append("ticket_id",document.getElementById("edit_ticket").value);
 formData.append("status",document.getElementById("edit_status").value);
 formData.append("catatan",document.getElementById("edit_catatan").value);

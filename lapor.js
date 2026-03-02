@@ -3,15 +3,6 @@
 // ========================================
 let isProcessing = false;
 
-document.addEventListener("DOMContentLoaded", function(){
-
-  const nama = localStorage.getItem("nama");
-
-  if(nama && nama !== "undefined"){
-    document.getElementById("nama").value = nama;
-  }
-
-});
 
 // ========================================
 // SANITASI INPUT

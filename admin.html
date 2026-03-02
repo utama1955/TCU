@@ -269,6 +269,18 @@ onmouseout="this.style.opacity='1'"
 </tbody>
 </table>
 
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:15px;">
+
+<div>
+<button onclick="setLimit(20)">20</button>
+<button onclick="setLimit(50)">50</button>
+<button onclick="setLimit(100)">100</button>
+</div>
+
+<button id="loadMoreBtn" onclick="loadMore()">Load More</button>
+
+</div>
+  
 </div>
 
 <div class="footer">
@@ -316,24 +328,25 @@ Maintenance Asset Management System
 
 const API_URL="https://script.google.com/macros/s/AKfycby6JebMRZ__80867L-PqkAN-BhRmkemVg9cV7lIJ2FkG_8zFQq0jCUTv352f3DKZT8Hzg/exec";
 
-let allTickets=[];
+let allTickets = [];
+let visibleCount = 20; // default tampil 20
 
 function goBack(){
-window.location.href="index.html";
+  window.location.href="index.html";
 }
-  
+
 function logout(){
-localStorage.clear();
-window.location.href="login.html";
+  localStorage.clear();
+  window.location.href="login.html";
 }
 
 function formatTanggalIndonesia(t){
-if(!t) return "-";
-const d=new Date(t);
-if(isNaN(d)) return "-";
-return String(d.getDate()).padStart(2,'0')+"/"+
-String(d.getMonth()+1).padStart(2,'0')+"/"+
-d.getFullYear();
+  if(!t) return "-";
+  const d=new Date(t);
+  if(isNaN(d)) return "-";
+  return String(d.getDate()).padStart(2,'0')+"/"+
+  String(d.getMonth()+1).padStart(2,'0')+"/"+
+  d.getFullYear();
 }
 
 async function loadData(){
@@ -358,94 +371,119 @@ async function loadData(){
 }
 
 function renderTable(data){
-const tbody=document.querySelector("#tabel tbody");
-tbody.innerHTML="";
 
-data.forEach(row=>{
-const status=row.status||"Waiting";
-let statusClass="waiting";
-if(status==="Pending") statusClass="pending";
-if(status==="On Progress") statusClass="process";
-if(status==="Done") statusClass="done";
+  const tbody=document.querySelector("#tabel tbody");
+  tbody.innerHTML="";
 
-const disabled=status==="Done"?"disabled":"";
+  // Urut terbaru di atas
+  data.sort((a,b)=>{
+    return new Date(b.update) - new Date(a.update);
+  });
 
-tbody.innerHTML+=`
-<tr>
-<td>${row.id||"-"}</td>
-<td>${row.nama||"-"}</td>
-<td>${row.departemen||"-"}</td>
-<td>${row.aset||"-"}</td>
-<td><button onclick="showDescription('${encodeURIComponent(row.deskripsi||"")}')">Lihat</button></td>
-<td><span class="status ${statusClass}">${status}</span></td>
-<td>${row.vendor||"-"}</td>
-<td>${formatTanggalIndonesia(row.update)}</td>
-<td>
-<button ${disabled} onclick="openEditModal('${row.id}','${status}')">
-${status==="Done"?"Close":"Edit"}
-</button>
-</td>
-</tr>`;
-});
+  const visibleData = data.slice(0, visibleCount);
+
+  visibleData.forEach(row=>{
+
+    const status=row.status||"Waiting";
+    let statusClass="waiting";
+    if(status==="Pending") statusClass="pending";
+    if(status==="On Progress") statusClass="process";
+    if(status==="Done") statusClass="done";
+
+    const disabled=status==="Done"?"disabled":"";
+
+    tbody.innerHTML+=`
+    <tr>
+    <td>${row.id||"-"}</td>
+    <td>${row.nama||"-"}</td>
+    <td>${row.departemen||"-"}</td>
+    <td>${row.aset||"-"}</td>
+    <td><button onclick="showDescription('${encodeURIComponent(row.deskripsi||"")}')">Lihat</button></td>
+    <td><span class="status ${statusClass}">${status}</span></td>
+    <td>${row.vendor||"-"}</td>
+    <td>${formatTanggalIndonesia(row.update)}</td>
+    <td>
+    <button ${disabled} onclick="openEditModal('${row.id}','${status}')">
+    ${status==="Done"?"Close":"Edit"}
+    </button>
+    </td>
+    </tr>`;
+  });
+
+  updateLoadMoreButton(data.length);
 }
 
-function applyFilter(){
-const selected=document.getElementById("filterStatus").value;
-if(selected==="All"){renderTable(allTickets);return;}
-renderTable(allTickets.filter(t=>t.status===selected));
+function setLimit(limit){
+  visibleCount = limit;
+  renderTable(allTickets);
+}
+
+function loadMore(){
+  visibleCount += 20;
+  renderTable(allTickets);
+}
+
+function updateLoadMoreButton(totalData){
+  const btn = document.getElementById("loadMoreBtn");
+  if(!btn) return;
+
+  if(visibleCount >= totalData){
+    btn.style.display="none";
+  }else{
+    btn.style.display="inline-block";
+  }
 }
 
 function showDescription(desc){
-document.getElementById("descContent").innerText=
-decodeURIComponent(desc)||"Tidak ada deskripsi.";
-document.getElementById("descModal").style.display="flex";
+  document.getElementById("descContent").innerText=
+  decodeURIComponent(desc)||"Tidak ada deskripsi.";
+  document.getElementById("descModal").style.display="flex";
 }
 
 function openEditModal(ticket,status){
-if(status==="Done"){
-alert("Ticket sudah selesai dan tidak dapat diedit kembali.");
-return;
-}
-document.getElementById("edit_ticket").value=ticket;
-document.getElementById("edit_status").value=status;
-document.getElementById("editModal").style.display="flex";
+  if(status==="Done"){
+    alert("Ticket sudah selesai dan tidak dapat diedit kembali.");
+    return;
+  }
+  document.getElementById("edit_ticket").value=ticket;
+  document.getElementById("edit_status").value=status;
+  document.getElementById("editModal").style.display="flex";
 }
 
 function closeModal(id){
-document.getElementById(id).style.display="none";
+  document.getElementById(id).style.display="none";
 }
 
 function overlayClose(event,id){
-if(event.target.id===id){
-closeModal(id);
-}
+  if(event.target.id===id){
+    closeModal(id);
+  }
 }
 
 async function saveEdit(){
 
-const formData=new FormData();
-formData.append("action","updateTicket");
-formData.append("token", localStorage.getItem("token"));
-formData.append("ticket_id",document.getElementById("edit_ticket").value);
-formData.append("status",document.getElementById("edit_status").value);
-formData.append("catatan",document.getElementById("edit_catatan").value);
-formData.append("vendor",document.getElementById("edit_vendor").value);
+  const formData=new FormData();
+  formData.append("action","updateTicket");
+  formData.append("token", localStorage.getItem("token"));
+  formData.append("ticket_id",document.getElementById("edit_ticket").value);
+  formData.append("status",document.getElementById("edit_status").value);
+  formData.append("catatan",document.getElementById("edit_catatan").value);
+  formData.append("vendor",document.getElementById("edit_vendor").value);
 
-const res=await fetch(API_URL,{method:"POST",body:formData});
-const result=await res.json();
+  const res=await fetch(API_URL,{method:"POST",body:formData});
+  const result=await res.json();
 
-if(result.success){
-  closeModal('editModal');
-  loadData();
-}else{
-  alert("Session habis. Silakan login ulang.");
-  localStorage.clear();
-  window.location.href="login.html";
+  if(result.success){
+    closeModal('editModal');
+    loadData();
+  }else{
+    alert("Session habis. Silakan login ulang.");
+    localStorage.clear();
+    window.location.href="login.html";
+  }
 }
 
-}
-
-// PANGGIL LOAD DATA SAAT HALAMAN DIBUKA
+// load saat halaman dibuka
 loadData();
 
 </script>

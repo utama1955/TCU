@@ -208,35 +208,22 @@ try{
 
 const res = await fetch(API_URL,{
 method:"POST",
-headers:{
-"Content-Type":"application/x-www-form-urlencoded"
-},
-body:
-"action=login" +
-"&username=" + encodeURIComponent(username) +
-"&password=" + encodeURIComponent(password)
+body:formData
 });
 
 const data = await res.json();
-console.log("LOGIN RESPONSE:", data);
 
 if(data.success){
 
-localStorage.setItem("token",data.token);
-localStorage.setItem("role",data.role);
-localStorage.setItem("username",username);
-localStorage.setItem("nama", data.nama);
+  localStorage.setItem("token",data.token);
+  localStorage.setItem("role",data.role);
+  localStorage.setItem("username",data.username);
+  localStorage.setItem("nama",data.nama);
 
-document.getElementById("status").innerText="Login berhasil";
-
-setTimeout(()=>{
-window.location.href="index.html";   // 🔥 SEMUA ROLE KE INDEX
-},500);
+  window.location.href="index.html";
 
 }else{
-
-document.getElementById("status").innerText="Username atau password salah";
-
+  document.getElementById("errorMsg").style.display="block";
 }
 
 }catch(error){

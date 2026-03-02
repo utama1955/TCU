@@ -419,11 +419,12 @@ const res=await fetch(API_URL,{method:"POST",body:formData});
 const result=await res.json();
 
 if(result.success){
-closeModal('editModal');
-loadData();
+  closeModal('editModal');
+  loadData();
 }else{
-alert("Update gagal");
-}
+  alert("Session habis. Silakan login ulang.");
+  localStorage.clear();
+  window.location.href="login.html";
 }
 
 loadData();

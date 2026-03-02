@@ -376,9 +376,9 @@ function renderTable(data){
   tbody.innerHTML="";
 
   // Urut terbaru di atas
-  data.sort((a,b)=>{
-    return new Date(b.update) - new Date(a.update);
-  });
+data.sort((a,b)=>{
+  return new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime();
+});
 
   const visibleData = data.slice(0, visibleCount);
 

@@ -496,6 +496,12 @@ async function saveEdit(){
 
   const res=await fetch(API_URL,{method:"POST",body:formData});
   const result=await res.json();
+  if(result.session_expired){
+  alert("Session berakhir. Silakan login ulang.");
+  localStorage.clear();
+  window.location.href = "login.html";
+  return;
+}
 
   if(result.success){
     closeModal('editModal');

@@ -8,6 +8,34 @@
 
 <style>
 
+.modal{
+display:none;
+position:fixed;
+left:0;
+top:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.55);
+justify-content:center;
+align-items:center;
+z-index:1000;
+}
+
+.modal-content{
+background:white;
+width:90%;
+max-width:450px;
+padding:25px;
+border-radius:14px;
+box-shadow:0 20px 40px rgba(0,0,0,0.35);
+animation:fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn{
+from{opacity:0; transform:scale(0.95);}
+to{opacity:1; transform:scale(1);}
+}
+  
 body{
 margin:0;
 font-family: Arial, Helvetica, sans-serif;
@@ -137,6 +165,16 @@ font-size:18px;
 <script>
 const token = localStorage.getItem("token");
 
+function openVendorInfo(){
+  document.getElementById("vendorModal").style.display = "flex";
+}
+
+function overlayCloseVendor(event){
+  if(event.target.id === "vendorModal"){
+    document.getElementById("vendorModal").style.display = "none";
+  }
+}
+
 if(!token){
   alert("Silakan login terlebih dahulu");
   window.location.href="login.html";
@@ -149,7 +187,12 @@ if(!token){
 
 <input type="text" id="ticket" placeholder="Masukkan Ticket ID">
 
-<button onclick="cekStatus()">CEK STATUS</button>
+<button onclick="()">CEK STATUS</button>
+
+<button type="button" onclick="openVendorInfo()" 
+style="background:#8e44ad;margin-top:10px;">
+📌 Informasi Pencarian Vendor
+</button>
 
 <div id="hasil" class="result"></div>
 
@@ -172,6 +215,35 @@ border-radius:5px;
 
 <script src="config.js"></script>
 <script src="cek.js"></script>
+<!-- MODAL INFORMASI VENDOR -->
+<div id="vendorModal" class="modal" onclick="overlayCloseVendor(event)">
+  <div class="modal-content">
+    <h3 style="text-align:center;color:#2c5364;">
+      Informasi Pencarian Vendor
+    </h3>
 
+    <div style="margin-top:15px; line-height:1.6; font-size:14px;">
+      <p>
+        Jika status sudah berubah menjadi <strong>On Progress</strong>, 
+        tim GA sedang melakukan proses pencarian vendor.
+      </p>
+
+      <p>
+        Vendor dipilih berdasarkan:
+      </p>
+
+      <ul>
+        <li>Ketersediaan jasa</li>
+        <li>Harga terbaik</li>
+        <li>Lokasi terdekat cabang</li>
+        <li>Kecepatan pengerjaan</li>
+      </ul>
+
+      <p>
+        Silakan tunggu update selanjutnya pada status laporan Anda.
+      </p>
+    </div>
+  </div>
+</div>
 </body>
 </html>

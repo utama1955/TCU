@@ -228,7 +228,17 @@ localStorage.setItem("username",username);
 document.getElementById("status").innerText="Login berhasil";
 
 setTimeout(()=>{
-window.location.href="index.html";   // 🔥 SEMUA ROLE KE INDEX
+if(data.first_login){
+
+alert("Ini adalah login pertama Anda.\nPassword awal adalah: password123\nSilakan ubah password Anda.");
+
+window.location.href="reset-first-password.html";
+
+}else{
+
+window.location.href="index.html";
+
+}
 },500);
 
 }else{

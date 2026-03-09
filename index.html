@@ -122,41 +122,26 @@ if(!token){
 </div>
 
 <script>
-const username = localStorage.getItem("username");
+document.addEventListener("DOMContentLoaded", function() {
+  const role = localStorage.getItem("role");
+  const adminSection = document.getElementById("adminSection");
 
-fetch(API_URL + "?action=getUser&username=" + username)
-.then(res => res.json())
-.then(data => {
+  console.log("Role yang terdeteksi:", role); // Cek ini di Console F12
 
-if(data.lastlogin === ""){
-    
-alert("Silakan ubah password terlebih dahulu.");
-
-window.location.href = "reset-first-password.html";
-
-}
-
-});
-
-function logout(){
-localStorage.clear();
-window.location.href="login.html";
-}
-
-document.addEventListener("DOMContentLoaded",function(){
-
-const username = localStorage.getItem("username");
-const role = localStorage.getItem("role");
-
-if(role === "admin"){
-document.getElementById("adminSection").style.display="block";
-}
-
+  if (role === "admin") {
+    if (adminSection) {
+      adminSection.style.display = "block";
+      console.log("Tombol Admin diaktifkan");
+    } else {
+      console.error("Elemen dengan ID 'adminSection' tidak ditemukan di HTML!");
+    }
+  }
 });
 </script>
 
 </body>
 </html>
+
 
 
 

@@ -126,6 +126,13 @@ document.addEventListener("DOMContentLoaded", function() {
   const role = localStorage.getItem("role");
   const adminSection = document.getElementById("adminSection");
 
+  function logout() {
+  if (confirm("Apakah Anda yakin ingin keluar?")) {
+    localStorage.clear(); 
+    window.location.href = "login.html";
+  }
+}
+  
   console.log("Role yang terdeteksi:", role); // Cek ini di Console F12
 
   if (role === "admin") {
@@ -141,6 +148,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 </body>
 </html>
+
 
 
 

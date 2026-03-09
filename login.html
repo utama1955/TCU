@@ -192,63 +192,49 @@ Maintenance Asset Management System
 const API_URL =
 "https://script.google.com/macros/s/AKfycbwXzrwzk0lKP50jsbJ9ZCWMmxNjztkUf1sPY0AfrZFMYSheOmgBh_B3RTSMDxpdastLcA/exec";
 
-async function login(){
+async function login() {
+  const status = document.getElementById("status");
+  status.innerText = "Memproses login...";
 
-document.getElementById("status").innerText="Memproses login...";
+  const username = document.getElementById("username").value.trim().toLowerCase();
+  const password = document.getElementById("password").value.trim();
 
-const username=document.getElementById("username").value.trim();
-const password=document.getElementById("password").value.trim();
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+    });
 
-if(!username || !password){
-document.getElementById("status").innerText="Username dan password wajib diisi";
-return;
-}
+    const data = await res.json();
 
-try{
+    if (data.success) {
+      // BERSIHKAN STORAGE LAMA
+      localStorage.clear();
 
-const res = await fetch(API_URL,{
-method:"POST",
-headers:{
-"Content-Type":"application/x-www-form-urlencoded"
-},
-body:
-"action=login" +
-"&username=" + encodeURIComponent(username) +
-"&password=" + encodeURIComponent(password)
-});
+      // SIMPAN DATA BARU
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+      localStorage.setItem("username", username);
 
-const data = await res.json();
+      status.innerText = "Login Berhasil!";
 
-if (data.success) {
-
-    localStorage.clear();
-    // 1. Simpan semua data ke localStorage
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.role.toLowerCase().trim()); // INI KUNCI AGAR TOMBOL ADMIN MUNCUL
-    localStorage.setItem("username", username);
-
-    document.getElementById("status").innerText = "Login berhasil! Mengalihkan...";
-
-    // 2. Beri jeda sedikit agar browser selesai menulis ke storage
-    setTimeout(() => {
-    if(data.first_login){
-      window.location.href = "reset-first-password.html";
+      setTimeout(() => {
+        // Logika Reset Password Pertama
+        // User dianggap baru jika data.first_login bernilai true
+        if (data.first_login || data.last_login === "" || !data.last_login) {
+          window.location.href = "reset-first-password.html";
+        } else {
+          window.location.href = "index.html";
+        }
+      }, 800);
     } else {
-      window.location.href = "index.html";
+      status.innerText = "Username atau password salah / Akun tidak aktif";
     }
-  }, 1000); // Jeda 0.8 detik agar stabil
-
-} else {
-    document.getElementById("status").innerText = "Username atau password salah";
-}
-
-}catch(error){
-
-console.error(error);
-document.getElementById("status").innerText="Koneksi gagal";
-
-}
-
+  } catch (error) {
+    status.innerText = "Koneksi ke database gagal";
+    console.error(error);
+  }
 }
 
 function togglePassword(){

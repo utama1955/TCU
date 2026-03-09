@@ -220,23 +220,23 @@ body:
 const data = await res.json();
 
 if (data.success) {
+
+    localStorage.clear();
     // 1. Simpan semua data ke localStorage
     localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.role); // INI KUNCI AGAR TOMBOL ADMIN MUNCUL
+    localStorage.setItem("role", data.role.toLowerCase().trim()); // INI KUNCI AGAR TOMBOL ADMIN MUNCUL
     localStorage.setItem("username", username);
 
     document.getElementById("status").innerText = "Login berhasil! Mengalihkan...";
 
     // 2. Beri jeda sedikit agar browser selesai menulis ke storage
     setTimeout(() => {
-        if (data.first_login) {
-            alert("Login pertama terdeteksi. Silakan ubah password utama123 Anda.");
-            window.location.href = "reset-first-password.html";
-        } else {
-            // Pastikan pindah ke index.html
-            window.location.href = "index.html";
-        }
-    }, 800); // Jeda 0.8 detik agar stabil
+    if(data.first_login){
+      window.location.href = "reset-first-password.html";
+    } else {
+      window.location.href = "index.html";
+    }
+  }, 1000); // Jeda 0.8 detik agar stabil
 
 } else {
     document.getElementById("status").innerText = "Username atau password salah";

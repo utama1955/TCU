@@ -37,7 +37,7 @@
     h2 { margin: 0 0 25px 0; font-size: 20px; color: #333; }
 
     #userInfo {
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         padding: 12px;
         background: #f1f4f6;
         border-radius: 8px;
@@ -65,7 +65,19 @@
     .admin-btn { background: #8e44ad; }
     .admin-btn:hover { background: #7d3c98; }
 
-    .logout-btn { background: #e74c3c; margin-top: 25px; }
+    /* Pemisah tombol logout */
+    .separator {
+        margin-top: 30px;
+        border: 0;
+        border-top: 1px solid #eee;
+    }
+
+    .logout-btn { 
+        background: #e74c3c; 
+        margin-top: 15px; /* Jarak tambahan setelah garis */
+        font-size: 13px;
+        padding: 12px;
+    }
     .logout-btn:hover { background: #c0392b; }
 </style>
 </head>
@@ -90,40 +102,34 @@
         <button style="background:#f39c12;">UBAH PASSWORD</button>
     </a>
 
+    <hr class="separator">
     <button class="logout-btn" onclick="logout()">LOGOUT</button>
 </div>
 
 <script src="config.js"></script>
 <script>
-    // 1. Ambil data dari Storage
     const token = localStorage.getItem("token");
     const role = localStorage.getItem("role");
     const fullUsername = localStorage.getItem("username") || "";
 
-    // Proteksi: Jika tidak login, balikkan ke login.html
     if (!token) {
         window.location.href = "login.html";
     }
 
-    // 2. Bersihkan Nama (Ambil depan @ dan jadikan huruf besar)
     const displayName = fullUsername.split('@')[0].toUpperCase();
 
-    // Jalankan manipulasi tampilan setelah halaman siap
     document.addEventListener("DOMContentLoaded", function() {
-        // Tampilkan Nama yang sudah bersih
         const userInfoEl = document.getElementById("userInfo");
         if (userInfoEl) {
-            userInfoEl.innerHTML = `Selamat Datang, ${displayName} 👋`;
+            userInfoEl.innerHTML = `Selamat Datang, ${displayName}`;
         }
 
-        // Munculkan tombol admin hanya jika role === admin
         if (role === "admin") {
             const adminBox = document.getElementById("adminSection");
             if (adminBox) adminBox.style.display = "block";
         }
     });
 
-    // 3. Fungsi Logout (Global agar bisa dipanggil onclick)
     function logout() {
         if (confirm("Apakah Anda yakin ingin keluar?")) {
             localStorage.clear();

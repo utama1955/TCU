@@ -68,86 +68,60 @@ background:#e74c3c;
 
 <body>
 
-<div class="container">
+  <div class="container">
+    <img src="Banner Utama.png" class="banner" alt="Banner">
 
-<img src="Banner Utama.png" class="banner">
+    <h2>LAPOR BOLO</h2>
 
-<h2>LAPOR BOLO...</h2>
+    <div id="userInfo">Memuat data user...</div>
 
-<div id="userInfo" style="margin-bottom:20px;text-align:left;font-size:14px;"></div>
+    <a href="lapor.html"><button>LAPOR KERUSAKAN</button></a>
+    <a href="cek.html"><button>CEK STATUS</button></a>
 
-<a href="lapor.html">
-<button>LAPOR KERUSAKAN</button>
-</a>
+    <div id="adminSection" style="display:none;">
+        <a href="admin.html"><button class="admin-btn">⚙ PANEL ADMIN</button></a>
+    </div>
 
-<a href="cek.html">
-<button>CEK STATUS</button>
-</a>
+    <a href="ubah-password.html">
+        <button style="background:#f39c12;">UBAH PASSWORD</button>
+    </a>
 
-<div id="adminSection" style="display:none;">
-<a href="admin.html">
-<button class="admin-btn">⚙ PANEL ADMIN</button>
-</a>
+    <button class="logout-btn" onclick="logout()">LOGOUT</button>
 </div>
 
-<a href="ubah-password.html">
-<button style="background:#f39c12;">UBAH PASSWORD</button>
-</a>
+<script>
+    // 1. Validasi Token & Ambil Data
+    const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role");
+    const username = localStorage.getItem("username");
 
-<button class="logout-btn" onclick="logout()">Logout</button>
-
-</div>
-
-  <script>
-const token = localStorage.getItem("token");
-const role = localStorage.getItem("role");
-const username = localStorage.getItem("username");
-
-if(!token){
-  window.location.href="login.html";
-}
-
-// 2. Tampilkan Menu Admin HANYA jika role-nya adalah 'admin'
-  // Pastikan ID 'adminSection' ada di elemen HTML Anda
-  if(role === "admin"){
-    document.getElementById("adminSection").style.display = "block";
-  } else {
-    document.getElementById("adminSection").style.display = "none";
-  }
-
-  // Tampilkan info user (opsional)
-  if(document.getElementById("userInfo")){
-    do
-  
-document.addEventListener("DOMContentLoaded", function() {
-  const role = localStorage.getItem("role");
-  const adminSection = document.getElementById("adminSection");
-
-  function logout() {
-  if (confirm("Apakah Anda yakin ingin keluar?")) {
-    localStorage.clear(); 
-    window.location.href = "login.html";
-  }
-}
-  
-  console.log("Role yang terdeteksi:", role); // Cek ini di Console F12
-
-  if (role === "admin") {
-    if (adminSection) {
-      adminSection.style.display = "block";
-      console.log("Tombol Admin diaktifkan");
-    } else {
-      console.error("Elemen dengan ID 'adminSection' tidak ditemukan di HTML!");
+    // Jika tidak ada token, tendang ke login
+    if (!token) {
+        window.location.href = "login.html";
     }
-  }
-});
-</script>
 
+    // 2. Jalankan Fungsi setelah halaman dimuat
+    document.addEventListener("DOMContentLoaded", function() {
+        // Update Info User
+        const userInfoEl = document.getElementById("userInfo");
+        if (username) {
+            userInfoEl.innerHTML = `Login sebagai: <b>${username}</b> <br> Role: <span style="text-transform:uppercase">${role}</span>`;
+        }
+
+        // Cek Role Admin
+        if (role === "admin") {
+            document.getElementById("adminSection").style.display = "block";
+        }
+    });
+
+    // 3. Fungsi Logout (Global Scope agar bisa dipanggil onclick)
+    function logout() {
+        if (confirm("Apakah Anda yakin ingin keluar?")) {
+            localStorage.clear();
+            window.location.href = "login.html";
+        }
+    }
+</script>
+  
 </body>
 </html>
-
-
-
-
-
-

@@ -190,7 +190,7 @@ Maintenance Asset Management System
 <script>
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbxqiWFyVFxbpIX1olRyx9PhHWRABcWePwwu79DC1TmUZzsgF_-W8qYtbq74XDgvPTmMzA/exec";
+"https://script.google.com/macros/s/AKfycbwK-fyX0ix4cHAl75KLnxu99wHUFvrggtTAZtIFgLQSZczQgEpfE-9MEqczOKQOePgT2g/exec";
 
 async function login() {
   const status = document.getElementById("status");
@@ -208,27 +208,26 @@ async function login() {
 
     const data = await res.json();
 
+    // Ganti bagian di dalam if(data.success) pada login.html
     if (data.success) {
-      // BERSIHKAN STORAGE LAMA
-      localStorage.clear();
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("role", data.role);
+    localStorage.setItem("username", data.username);
 
-      // SIMPAN DATA BARU
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("role", data.role);
-      localStorage.setItem("username", username);
-
-      status.innerText = "Login Berhasil!";
-
-      setTimeout(() => {
-        // Logika Reset Password Pertama
-        // User dianggap baru jika data.first_login bernilai true
-        if (data.first_login || data.last_login === "" || !data.last_login) {
-          window.location.href = "reset-first-password.html";
-        } else {
-          window.location.href = "index.html";
-        }
-      }, 800);
+    // HANYA lempar ke reset jika backend bilang ini benar-benar login PERTAMA
+    if (data.first_login === true) {
+        document.getElementById("status").innerText = "Pengguna baru, silakan ganti password...";
+        setTimeout(() => {
+            window.location.href = "reset-first-password.html";
+        }, 800);
     } else {
+        // Jika sudah pernah login (first_login: false), LANGSUNG ke index
+        document.getElementById("status").innerText = "Login Berhasil, mengalihkan...";
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 800);
+    }
+} else {
       status.innerText = "Username atau password salah / Akun tidak aktif";
     }
   } catch (error) {

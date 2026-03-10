@@ -190,7 +190,7 @@ Maintenance Asset Management System
 <script>
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbwXzrwzk0lKP50jsbJ9ZCWMmxNjztkUf1sPY0AfrZFMYSheOmgBh_B3RTSMDxpdastLcA/exec";
+"https://script.google.com/macros/s/AKfycbxqiWFyVFxbpIX1olRyx9PhHWRABcWePwwu79DC1TmUZzsgF_-W8qYtbq74XDgvPTmMzA/exec";
 
 async function login() {
   const status = document.getElementById("status");
@@ -237,6 +237,53 @@ async function login() {
   }
 }
 
+async function handleLogin() {
+  const status = document.getElementById("status");
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  if(!username || !password) {
+    status.innerText = "Isi username dan password!";
+    return;
+  }
+
+  status.innerText = "Sedang masuk...";
+
+  try {
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: `action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+      localStorage.setItem("username", data.username);
+
+      status.innerText = "Login Berhasil!";
+
+      setTimeout(() => {
+        // LOGIKA PENGALIHAN
+        if (data.first_login === true) {
+          // Jika password masih 'utama123', wajib ganti
+          window.location.href = "reset-first-password.html";
+        } else {
+          // Jika password sudah diubah sebelumnya, langsung ke menu utama
+          window.location.href = "index.html";
+        }
+      }, 1000);
+
+    } else {
+      status.innerText = "Login Gagal. Cek kembali akun Anda.";
+    }
+  } catch (e) {
+    status.innerText = "Gangguan koneksi ke server.";
+  }
+}
+        
 function togglePassword(){
   const input = document.getElementById("password");
   const eye = event.target;

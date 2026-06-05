@@ -44,6 +44,35 @@ return "-";
 return `<button type="button" class="inline-action" onclick="openFotoStatus('${encodeURIComponent(foto)}')">Lihat Foto</button>`;
 }
 
+function renderHistoryItem(item){
+const note = safeText(item.note);
+const vendor = safeText(item.vendor);
+const estimasi = safeText(item.estimasi);
+const details = safeText(item.details);
+
+return `
+<div class="history-item">
+  <div class="history-date">${formatTanggalIndonesia(item.tanggal)}</div>
+  <div class="history-body">
+    <div class="history-action">${safeText(item.action)}</div>
+    <div class="history-meta">Status: ${safeText(item.status)}</div>
+    ${note !== "-" ? `<div class="history-text">${note}</div>` : ""}
+    ${vendor !== "-" ? `<div class="history-meta">Vendor: ${vendor}</div>` : ""}
+    ${estimasi !== "-" ? `<div class="history-meta">Estimasi: ${estimasi}</div>` : ""}
+    ${details !== "-" ? `<div class="history-meta">${details}</div>` : ""}
+  </div>
+</div>
+`;
+}
+
+function renderHistory(history){
+if(!Array.isArray(history) || history.length === 0){
+return "<div class='history-empty'>Belum ada histori update.</div>";
+}
+
+return history.map(renderHistoryItem).join("");
+}
+
 // Render list item (header yang diklik untuk expand)
 function renderTicketListItem(ticket){
 const statusText = safeText(ticket.status) === "-" ? "Waiting" : safeText(ticket.status);

@@ -57,6 +57,10 @@ overflow-x:auto;
 
 .filter-box{
 margin-bottom:15px;
+display:flex;
+align-items:center;
+gap:8px;
+flex-wrap:wrap;
 }
 
 table{
@@ -270,6 +274,28 @@ onmouseout="this.style.opacity='1'"
 <option value="On Progress">On Progress</option>
 <option value="Done">Done</option>
 </select>
+
+<label><strong>Bulan:</strong></label>
+<select id="filterMonth" onchange="applyFilter()">
+<option value="All">All</option>
+<option value="1">Januari</option>
+<option value="2">Februari</option>
+<option value="3">Maret</option>
+<option value="4">April</option>
+<option value="5">Mei</option>
+<option value="6">Juni</option>
+<option value="7">Juli</option>
+<option value="8">Agustus</option>
+<option value="9">September</option>
+<option value="10">Oktober</option>
+<option value="11">November</option>
+<option value="12">Desember</option>
+</select>
+
+<label><strong>Tahun:</strong></label>
+<select id="filterYear" onchange="applyFilter()">
+<option value="All">All</option>
+</select>
 </div>
 
 <table id="tabel">
@@ -412,17 +438,59 @@ async function loadData(){
   }
 
   allTickets = data;
+  renderYearOptions();
    applyFilter();
 }
 
-function getFilteredTickets(){
-  const filter = document.getElementById("filterStatus").value;
+function getTicketFilterDate(row){
+  return row.update || row.tanggal;
+}
 
-  if(filter === "All"){
-    return allTickets;
+function getDateParts(value){
+  const date = new Date(value);
+
+  if(isNaN(date)){
+    return null
   }
 
-  return allTickets.filter(row => (row.status || "Waiting") === filter);
+  return {
+    month: date.getMonth() + 1,
+    year: date.getFullYear()
+  };
+}
+
+function renderYearOptions(){
+  const yearSelect = document.getElementById("filterYear");
+  const currentValue = yearSelect.value || "All";
+  const years = [];
+
+  allTickets.forEach(row => {
+    const parts = getDateParts(getTicketFilterDate(row));
+    if(parts && years.indexOf(parts.year) === -1){
+      years.push(parts.year);
+    }
+  });
+
+  years.sort((a,b)=>b-a);
+
+  yearSelect.innerHTML = '<option value="All">All</option>' +
+    years.map(year => `<option value="${year}">${year}</option>`).join("");
+
+  if(currentValue !== "All" && years.indexOf(Number(currentValue)) >= 0){
+    yearSelect.value = currentValue;
+  }
+}
+
+function getFilteredTickets(){
+  const statusFilter = document.getElementById("filterStatus").value;
+  const monthFilter = document.getElementById("filterMonth").value;
+  const yearFilter = document.getElementById("filterYear").value;
+
+  return allTickets.filter(row => {
+    const statusMatch = statusFilter === "All" || (row.status || "Waiting") === statusFilter;
+    const parts = getDateParts(getTicketFilterDate(row));
+    const monthMatch = monthFilter === "All" || (parts && parts.month === Number(monthFilter));
+    const yearMatch = yearFilter === "All" || (parts && parts.year === Number(yearFilter));
 }
 
 function applyFilter(){

@@ -412,7 +412,27 @@ async function loadData(){
   }
 
   allTickets = data;
-  renderTable(allTickets);
+   applyFilter();
+}
+
+function getFilteredTickets(){
+  const filter = document.getElementById("filterStatus").value;
+
+  if(filter === "All"){
+    return allTickets;
+  }
+
+  return allTickets.filter(row => (row.status || "Waiting") === filter);
+}
+
+function applyFilter(){
+  visibleCount = 20;
+
+  document.getElementById("limit20").classList.add("active");
+  document.getElementById("limit50").classList.remove("active");
+  document.getElementById("limit100").classList.remove("active");
+
+  renderTable(getFilteredTickets());
 }
 
 function renderTable(data){
@@ -471,12 +491,12 @@ function setLimit(limit){
   // aktifkan yang dipilih
   document.getElementById("limit"+limit).classList.add("active");
 
-  renderTable(allTickets);
+  renderTable(getFilteredTickets());
 }
 
 function loadMore(){
   visibleCount += 20;
-  renderTable(allTickets);
+  renderTable(getFilteredTickets());
 }
 
 function updateLoadMoreButton(totalData){

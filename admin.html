@@ -416,6 +416,14 @@ function formatTanggalIndonesia(t){
 
 async function loadData(){
 
+   const tbody=document.querySelector("#tabel tbody");
+
+  if(tbody){
+    tbody.innerHTML='<tr><td colspan="10">Loading...</td></tr>';
+  }
+
+  try{
+
   const token = localStorage.getItem("token");
 
   const res = await fetch(
@@ -437,9 +445,20 @@ async function loadData(){
     return;
   }
 
+if(!Array.isArray(data)){
+    throw new Error("Response list bukan array");
+  }
+    
   allTickets = data;
   renderYearOptions();
    applyFilter();
+
+   }catch(error){
+    console.error("LOAD DATA ERROR:", error);
+    if(tbody){
+      tbody.innerHTML='<tr><td colspan="10" style="color:red;">Data gagal dimuat. Silakan refresh halaman.</td></tr>';
+    }
+  }
 }
 
 function getTicketFilterDate(row){
@@ -447,7 +466,14 @@ function getTicketFilterDate(row){
 }
 
 function getDateParts(value){
-  const date = new Date(value);
+  let date = new Date(value);
+
+  if(isNaN(date) && typeof value === "string"){
+    const match = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if(match){
+      date = new Date(Number(match[3]), Number(match[2]) - 1, Number(match[1]));
+    }
+  }
 
   if(isNaN(date)){
     return null
@@ -461,6 +487,7 @@ function getDateParts(value){
 
 function renderYearOptions(){
   const yearSelect = document.getElementById("filterYear");
+  if(!yearSelect) return;
   const currentValue = yearSelect.value || "All";
   const years = [];
 
@@ -508,6 +535,12 @@ function renderTable(data){
   const tbody=document.querySelector("#tabel tbody");
   tbody.innerHTML="";
 
+if(!Array.isArray(data) || data.length === 0){
+    tbody.innerHTML='<tr><td colspan="10">Tidak ada data sesuai filter.</td></tr>';
+    updateLoadMoreButton(0);
+    return;
+  }
+  
   // Urut terbaru di atas
   data.sort((a,b)=>{
   return new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime();

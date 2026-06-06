@@ -369,6 +369,7 @@ Maintenance Asset Management System
 
 let allTickets = [];
 let visibleCount = 20; // default tampil 20
+let isSavingEdit = false;
 
 function goBack(){
   window.location.href="index.html";
@@ -548,16 +549,32 @@ function openEditModal(ticket,status,catatan,vendor,estimasi){
 }
 
 function closeModal(id){
+  if(id === "editModal" && isSavingEdit) return;
+
   document.getElementById(id).style.display="none";
 }
 
 function overlayClose(event,id){
+  if(isSavingEdit) return;
+
   if(event.target.id===id){
     closeModal(id);
   }
 }
 
 async function saveEdit(){
+
+  if(isSavingEdit) return;
+  isSavingEdit = true;
+
+  const saveBtn = document.querySelector(".save-btn");
+  const editFields = document.querySelectorAll("#editModal input, #editModal textarea, #editModal select");
+
+  saveBtn.disabled = true;
+  saveBtn.innerText = "Menyimpan...";
+  editFields.forEach(field => field.disabled = true);
+
+try{
 
   const formData=new FormData();
   formData.append("action","updateTicket");
@@ -586,6 +603,26 @@ async function saveEdit(){
     localStorage.clear();
     window.location.href="login.html";
   }
+
+}catch(error){
+  console.error("SAVE EDIT ERROR:", error);
+  alert("Gagal menyimpan perubahan. Silakan coba lagi.");
+}
+
+  resetSaveButton();
+}
+
+function resetSaveButton(){
+  const saveBtn = document.querySelector(".save-btn");
+  const editFields = document.querySelectorAll("#editModal input, #editModal textarea, #editModal select");
+
+  if(saveBtn){
+    saveBtn.disabled = false;
+    saveBtn.innerText = "Save";
+  }
+
+  editFields.forEach(field => field.disabled = false);
+  isSavingEdit = false;
 }
 
 // load saat halaman dibuka

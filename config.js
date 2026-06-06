@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxfVxKgXQPXRhUTvgyJ5lcSOHbcrz-_wvrL4Qj3PPTDbk7yO7mZufm7Mdb-AJG6Icyr6Q/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxJ-Mw2W9WRKXOI5iKPdJMoG-TL48hCsLeK2mdBxlRZyN2pZjhJcvP9jD4uGQg1DJPj9A/exec";
 
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/db00zaan0/image/upload";
 

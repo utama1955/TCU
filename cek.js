@@ -47,6 +47,8 @@ return `<button type="button" class="inline-action" onclick="openFotoStatus('${e
 function renderHistoryItem(item){
 const note = safeText(item.note);
 const vendor = safeText(item.vendor);
+const cabang = safeText(item.cabang);
+const kategori = safeText(item.kategori);
 const estimasi = safeText(item.estimasi);
 const details = safeText(item.details);
 
@@ -56,6 +58,8 @@ return `
   <div class="history-body">
     <div class="history-action">${safeText(item.action)}</div>
     <div class="history-meta">Status: ${safeText(item.status)}</div>
+    ${cabang !== "-" ? `<div class="history-meta">Cabang: ${cabang}</div>` : ""}
+    ${kategori !== "-" ? `<div class="history-meta">Kategori: ${kategori}</div>` : ""}
     ${note !== "-" ? `<div class="history-text">${note}</div>` : ""}
     ${vendor !== "-" ? `<div class="history-meta">Vendor: ${vendor}</div>` : ""}
     ${estimasi !== "-" ? `<div class="history-meta">Estimasi: ${estimasi}</div>` : ""}

@@ -98,3 +98,500 @@ font-weight:600;
 button{
 padding:6px 12px;
 border:none;
+border-radius:6px;
+cursor:pointer;
+background:#2c5364;
+color:white;
+}
+
+button:disabled{
+background:#bdc3c7;
+cursor:not-allowed;
+}
+
+/* MODAL */
+.modal{
+display:none;
+position:fixed;
+left:0;
+top:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.55);
+justify-content:center;
+align-items:center;
+z-index:1000;
+}
+
+.modal-content{
+background:white;
+width:95%;
+max-width:500px;
+padding:25px;
+border-radius:14px;
+box-shadow:0 20px 40px rgba(0,0,0,0.35);
+position:relative;
+animation:fadeIn 0.2s ease-in-out;
+}
+
+.foto-modal-content{
+max-width:380px;
+padding:20px;
+}
+
+#fotoContent{
+width:100%;
+max-height:70vh;
+object-fit:contain;
+border-radius:10px;
+margin-top:12px;
+}
+  
+@keyframes fadeIn{
+from{opacity:0; transform:scale(0.95);}
+to{opacity:1; transform:scale(1);}
+}
+
+.modal-content h3{
+text-align:center;
+color:#2c5364;
+margin-bottom:20px;
+}
+
+.close-btn{
+position:absolute;
+top:12px;
+right:15px;
+font-size:22px;
+font-weight:bold;
+color:#e74c3c;
+cursor:pointer;
+transition:0.2s;
+}
+
+.close-btn:hover{
+color:#c0392b;
+transform:scale(1.1);
+}
+
+.modal-content label{
+display:block;
+margin-top:12px;
+font-size:13px;
+font-weight:600;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select{
+width:100%;
+padding:12px;
+border-radius:8px;
+border:1px solid #ccc;
+margin-top:5px;
+box-sizing:border-box;
+}
+
+.save-btn{
+width:100%;
+padding:12px;
+margin-top:15px;
+border-radius:8px;
+font-weight:600;
+background:#27ae60;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+.footer{
+text-align:center;
+padding:15px;
+font-size:12px;
+color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<script>
+const token = localStorage.getItem("token");
+const role = localStorage.getItem("role");
+
+if(!token){
+  window.location.href="login.html";
+}
+
+if(role !== "admin"){
+  alert("Akses admin ditolak.");
+  window.location.href="index.html";
+}
+</script>
+
+<div class="container">
+
+<div class="header">
+
+<div style="display:flex;align-items:center;gap:15px;">
+
+<button onclick="goBack()" 
+style="
+background:transparent;
+border:none;
+color:white;
+font-size:22px;
+cursor:pointer;
+padding:0;
+transition:0.2s;
+"
+onmouseover="this.style.opacity='0.7'"
+onmouseout="this.style.opacity='1'"
+>
+◀
+</button>
+
+<h2 style="margin:0;">Admin Panel - Maintenance Aset</h2>
+
+</div>
+
+<button class="logout-btn" onclick="logout()">Logout</button>
+
+</div>
+
+<div class="content">
+
+<div class="filter-box">
+<label><strong>Filter Status:</strong></label>
+<select id="filterStatus" onchange="applyFilter()">
+<option value="All">All</option>
+<option value="Waiting">Waiting</option>
+<option value="Pending">Pending</option>
+<option value="On Progress">On Progress</option>
+<option value="Done">Done</option>
+</select>
+</div>
+
+<table id="tabel">
+<thead>
+<tr>
+<th>Ticket</th>
+<th>Pelapor</th>
+<th>Cabang</th>
+<th>Aset</th>
+<th>Deskripsi</th>
+<th>Foto</th>
+<th>Status</th>
+<th>Vendor</th>
+<th>Update</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr><td colspan="9">Loading...</td></tr>
+</tbody>
+</table>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-top:15px;">
+
+<div>
+<button class="limit-btn active" id="limit20" onclick="setLimit(20)">20</button>
+<button class="limit-btn" id="limit50" onclick="setLimit(50)">50</button>
+<button class="limit-btn" id="limit100" onclick="setLimit(100)">100</button>
+</div>
+
+<button id="loadMoreBtn" onclick="loadMore()">Load More</button>
+
+</div>
+  
+</div>
+
+<div class="footer">
+Maintenance Asset Management System
+</div>
+</div>
+
+<!-- MODAL EDIT -->
+<div id="editModal" class="modal" onclick="overlayClose(event,'editModal')">
+<div class="modal-content foto-modal-content">
+<span class="close-btn" onclick="closeModal('editModal')">&times;</span>
+<h3>Edit Ticket</h3>
+
+<label>Ticket ID</label>
+<input id="edit_ticket" readonly>
+
+<label>Status</label>
+<select id="edit_status">
+<option value="Waiting">Waiting</option>
+<option value="Pending">Pending</option>
+<option value="On Progress">On Progress</option>
+<option value="Done">Done</option>
+</select>
+
+<label>Catatan GA</label>
+<textarea id="edit_catatan"></textarea>
+
+<label>Vendor</label>
+<input id="edit_vendor">
+
+<label>Estimasi Selesai</label>
+<input id="edit_estimasi" placeholder="Contoh: 3 hari kerja">
+
+  
+<button class="save-btn" onclick="saveEdit()">Save</button>
+</div>
+</div>
+
+<!-- MODAL DESKRIPSI -->
+<div id="descModal" class="modal" onclick="overlayClose(event,'descModal')">
+<div class="modal-content">
+<span class="close-btn" onclick="closeModal('descModal')">&times;</span>
+<h3>Deskripsi Kerusakan</h3>
+<div id="descContent" style="margin-top:15px; line-height:1.2;"></div>
+</div>
+</div>
+
+<!-- MODAL FOTO -->
+<div id="fotoModal" class="modal" onclick="overlayClose(event,'fotoModal')">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal('fotoModal')">&times;</span>
+    <h3>Foto Laporan</h3>
+
+    <div style="text-align:center;">
+      <img id="fotoContent" 
+           alt="Foto Laporan">
+    </div>
+
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script>
+
+let allTickets = [];
+let visibleCount = 20; // default tampil 20
+
+function goBack(){
+  window.location.href="index.html";
+}
+
+function logout(){
+  localStorage.clear();
+  window.location.href="login.html";
+}
+
+function formatTanggalIndonesia(t){
+  if(!t) return "-";
+  const d=new Date(t);
+  if(isNaN(d)) return "-";
+  return String(d.getDate()).padStart(2,'0')+"/"+
+  String(d.getMonth()+1).padStart(2,'0')+"/"+
+  d.getFullYear();
+}
+
+async function loadData(){
+
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(
+    API_URL + "?action=list&token=" + encodeURIComponent(token)
+  );
+
+  const data = await res.json();
+  if(data.session_expired){
+  alert("Session berakhir. Silakan login ulang.");
+  localStorage.clear();
+  window.location.href = "login.html";
+  return;
+}
+
+  if(!data || data.success === false){
+    alert("Session habis. Silakan login ulang.");
+    localStorage.clear();
+    window.location.href="login.html";
+    return;
+  }
+
+  allTickets = data;
+  applyFilter();
+}
+
+function getFilteredTickets(){
+  const statusFilter = document.getElementById("filterStatus").value;
+
+  if(statusFilter === "All"){
+    return allTickets;
+  }
+
+  return allTickets.filter(row => (row.status || "Waiting") === statusFilter);
+}
+
+function applyFilter(){
+  visibleCount = 20;
+
+  document.getElementById("limit20").classList.add("active");
+  document.getElementById("limit50").classList.remove("active");
+  document.getElementById("limit100").classList.remove("active");
+
+  renderTable(getFilteredTickets());
+}
+
+function renderTable(data){
+
+  const tbody=document.querySelector("#tabel tbody");
+  tbody.innerHTML="";
+
+  if(!Array.isArray(data) || data.length === 0){
+    tbody.innerHTML='<tr><td colspan="10">Tidak ada data sesuai filter.</td></tr>';
+    updateLoadMoreButton(0);
+    return;
+  }
+
+  // Urut terbaru di atas
+  data.sort((a,b)=>{
+  return new Date(b.tanggal).getTime() - new Date(a.tanggal).getTime();
+});;
+
+  const visibleData = data.slice(0, visibleCount);
+
+  visibleData.forEach(row=>{
+
+    const status=row.status||"Waiting";
+    let statusClass="waiting";
+    if(status==="Pending") statusClass="pending";
+    if(status==="On Progress") statusClass="process";
+    if(status==="Done") statusClass="done";
+
+    const disabled=status==="Done"?"disabled":"";
+
+    tbody.innerHTML+=`
+    <tr>
+    <td>${row.id||"-"}</td>
+    <td>${row.nama||"-"}</td>
+    <td>${row.departemen||"-"}</td>
+    <td>${row.aset||"-"}</td>
+    <td><button onclick="showDescription('${encodeURIComponent(row.deskripsi||"")}')">Lihat</button></td>
+    <td>${ row.foto ? `<button onclick="showFoto('${row.foto}')">Lihat</button>`: "-" }</td>
+    <td><span class="status ${statusClass}">${status}</span></td>
+    <td>${row.vendor||"-"}</td>
+    <td>${formatTanggalIndonesia(row.update)}</td>
+    <td>
+   <button ${disabled} onclick="openEditModal('${encodeURIComponent(row.id||"")}','${encodeURIComponent(status)}','${encodeURIComponent(row.catatan||"")}','${encodeURIComponent(row.vendor||"")}','${encodeURIComponent(row.estimasi||"")}')">
+    ${status==="Done"?"Close":"Edit"}
+    </button>
+    </td>
+    </tr>`;
+  });
+
+  updateLoadMoreButton(data.length);
+}
+
+function setLimit(limit){
+
+  visibleCount = limit;
+
+  // reset semua tombol
+  document.getElementById("limit20").classList.remove("active");
+  document.getElementById("limit50").classList.remove("active");
+  document.getElementById("limit100").classList.remove("active");
+
+  // aktifkan yang dipilih
+  document.getElementById("limit"+limit).classList.add("active");
+
+  renderTable(getFilteredTickets());
+}
+
+function loadMore(){
+  visibleCount += 20;
+  renderTable(getFilteredTickets());
+}
+
+function updateLoadMoreButton(totalData){
+  const btn = document.getElementById("loadMoreBtn");
+  if(!btn) return;
+
+  if(visibleCount >= totalData){
+    btn.style.display="none";
+  }else{
+    btn.style.display="inline-block";
+  }
+}
+
+function showDescription(desc){
+  document.getElementById("descContent").innerText=
+  decodeURIComponent(desc)||"Tidak ada deskripsi.";
+  document.getElementById("descModal").style.display="flex";
+}
+  
+function showFoto(url){
+  if(!url){
+    alert("Foto tidak tersedia");
+    return;
+  }
+  document.getElementById("fotoContent").src = url;
+  document.getElementById("fotoModal").style.display = "flex";
+}
+  
+function openEditModal(ticket,status,catatan,vendor,estimasi){
+  const ticketValue = decodeURIComponent(ticket || "");
+  const statusValue = decodeURIComponent(status || "Waiting");
+
+  if(statusValue==="Done"){
+    alert("Ticket sudah selesai dan tidak dapat diedit kembali.");
+    return;
+  }
+  document.getElementById("edit_ticket").value=ticketValue;
+  document.getElementById("edit_status").value=statusValue;
+  document.getElementById("edit_catatan").value=decodeURIComponent(catatan || "");
+  document.getElementById("edit_vendor").value=decodeURIComponent(vendor || "");
+  document.getElementById("edit_estimasi").value=decodeURIComponent(estimasi || "");
+  document.getElementById("editModal").style.display="flex";
+}
+
+function closeModal(id){
+  document.getElementById(id).style.display="none";
+}
+
+function overlayClose(event,id){
+  if(event.target.id===id){
+    closeModal(id);
+  }
+}
+
+async function saveEdit(){
+
+  const formData=new FormData();
+  formData.append("action","updateTicket");
+  formData.append("token", localStorage.getItem("token"));
+  formData.append("ticket_id",document.getElementById("edit_ticket").value);
+  formData.append("status",document.getElementById("edit_status").value);
+  formData.append("catatan",document.getElementById("edit_catatan").value);
+  formData.append("vendor",document.getElementById("edit_vendor").value);
+  formData.append("estimasi",document.getElementById("edit_estimasi").value);
+
+
+  const res=await fetch(API_URL,{method:"POST",body:formData});
+  const result=await res.json();
+  if(result.session_expired){
+  alert("Session berakhir. Silakan login ulang.");
+  localStorage.clear();
+  window.location.href = "login.html";
+  return;
+}
+
+  if(result.success){
+    closeModal('editModal');
+    loadData();
+  }else{
+    alert("Session habis. Silakan login ulang.");
+    localStorage.clear();
+    window.location.href="login.html";
+  }
+}
+
+// load saat halaman dibuka
+loadData();
+
+</script>
+
+</body>
+</html>

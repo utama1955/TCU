@@ -35,13 +35,36 @@ return "status-open";
 }
 
 function renderPhotoButton(url){
-const foto = safeText(url);
+const fotos = parseFotoList(url);
 
-if(foto === "-"){
+if(fotos.length === 0){
 return "-";
 }
 
-return `<button type="button" class="inline-action" onclick="openFotoStatus('${encodeURIComponent(foto)}')">Lihat Foto</button>`;
+const label = fotos.length > 1 ? "Lihat " + fotos.length + " Foto" : "Lihat Foto";
+const payload = encodeURIComponent(JSON.stringify(fotos));
+
+return `<button type="button" class="inline-action" onclick="openFotoStatus('${payload}')">${label}</button>`;
+}
+
+function parseFotoList(value){
+const foto = safeText(value);
+
+if(foto === "-"){
+return [];
+}
+
+try{
+const parsed = JSON.parse(foto);
+if(Array.isArray(parsed)){
+return parsed.filter(function(url){
+return safeText(url) !== "-";
+});
+}
+}catch(error){
+}
+
+return [foto];
 }
 
 function copyTicketId(event, ticketId){

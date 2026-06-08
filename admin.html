@@ -614,7 +614,7 @@ function renderFotoButton(value){
     return "-";
   }
 
-  const label = fotos.length > 1 ? "" + fotos.length + " Foto" : "Lihat";
+  const label = fotos.length > 1 ? "[ " + fotos.length + " Foto ]" : "Lihat";
   const payload = encodeURIComponent(JSON.stringify(fotos));
 
   return `<button onclick="showFoto('${payload}')">${label}</button>`;
@@ -834,20 +834,23 @@ try{
 }
 
   if(result.success){
+    resetSaveButton();
     closeModal('editModal');
+    alert("Update ticket berhasil disimpan.");
     loadData();
+    return;
   }else{
-    alert("Session habis. Silakan login ulang.");
-    localStorage.clear();
-    window.location.href="login.html";
+    alert(result.message || "Gagal menyimpan update ticket. Silakan coba lagi.");
+    resetSaveButton();
+    return;
   }
 
 }catch(error){
   console.error("SAVE EDIT ERROR:", error);
   alert("Gagal menyimpan perubahan. Silakan coba lagi.");
-}
-
   resetSaveButton();
+  return;
+}
 }
 
 function resetSaveButton(){

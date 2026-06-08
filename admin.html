@@ -135,16 +135,27 @@ animation:fadeIn 0.2s ease-in-out;
 }
 
 .foto-modal-content{
-max-width:380px;
+max-width:760px;
 padding:20px;
 }
 
-#fotoContent{
+.foto-gallery{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:12px;
+max-height:72vh;
+overflow:auto;
+padding-right:4px;
+margin-top:12px;
+}
+
+.foto-gallery img
 width:100%;
-max-height:70vh;
+max-height:320px;
 object-fit:contain;
 border-radius:10px;
-margin-top:12px;
+border:1px solid #dce5e8;
+background:white;
 }
   
 @keyframes fadeIn{
@@ -356,7 +367,7 @@ Maintenance Asset Management System
     <span class="close-btn" onclick="closeModal('fotoModal')">&times;</span>
     <h3>Foto Laporan</h3>
 
-    <div style="text-align:center;">
+    <div id="fotoContent" class="foto-gallery"></div>
       <img id="fotoContent" 
            alt="Foto Laporan">
     </div>
@@ -471,7 +482,7 @@ function renderTable(data){
     <td>${row.departemen||"-"}</td>
     <td>${row.aset||"-"}</td>
     <td><button onclick="showDescription('${encodeURIComponent(row.deskripsi||"")}')">Lihat</button></td>
-    <td>${ row.foto ? `<button onclick="showFoto('${row.foto}')">Lihat</button>`: "-" }</td>
+    <td>${renderFotoButton(row.foto)}</td>
     <td><span class="status ${statusClass}">${status}</span></td>
     <td>${row.vendor||"-"}</td>
     <td>${formatTanggalIndonesia(row.update)}</td>
@@ -522,13 +533,54 @@ function showDescription(desc){
   decodeURIComponent(desc)||"Tidak ada deskripsi.";
   document.getElementById("descModal").style.display="flex";
 }
+
+function parseFotoList(value){
+  const foto = String(value || "").trim();
+
+  if(!foto){
+    return [];
+  }
+
+  try{
+    const parsed = JSON.parse(foto);
+    if(Array.isArray(parsed)){
+      return parsed.filter(url => String(url || "").trim() !== "");
+    }
+  }catch(error){
+  }
+
+  return [foto];
+}
+
+function renderFotoButton(value){
+  const fotos = parseFotoList(value);
+
+  if(fotos.length === 0){
+    return "-";
+  }
+
+  const label = fotos.length > 1 ? "Lihat " + fotos.length : "Lihat";
+  const payload = encodeURIComponent(JSON.stringify(fotos));
+
+  return `<button onclick="showFoto('${payload}')">${label}</button>`;
+}
   
-function showFoto(url){
-  if(!url){
+function showFoto(payload){
+  let fotos = [];
+
+  try{
+    fotos = JSON.parse(decodeURIComponent(payload));
+  }catch(error){
+    fotos = [decodeURIComponent(payload)];
+  }
+
+  if(fotos.length === 0){
     alert("Foto tidak tersedia");
     return;
   }
-  document.getElementById("fotoContent").src = url;
+  document.getElementById("fotoContent").innerHTML = fotos.map(url => {
+    return `<img src="${url}" alt="Foto Laporan">`;
+  }).join("");
   document.getElementById("fotoModal").style.display = "flex";
 }
   

@@ -173,7 +173,7 @@ gap:8px;
 margin-bottom:4px;
 flex-wrap:wrap;
 }
-  
+
 .ticket-list-id{
 font-size:16px;
 font-weight:800;
@@ -259,7 +259,7 @@ flex-direction:column;
 
 .ticket-footer{
 display:grid;
-grid-template-columns:1fr auto;
+grid-template-columns:1fr auto auto;
 gap:16px;
 align-items:flex-start;
 margin-top:12px;
@@ -321,7 +321,7 @@ font-size:13px;
 color:#52666e;
 padding:8px 0;
 }
-  
+
 .loading-box,
 .empty-state{
 background:#f7fafb;
@@ -487,8 +487,9 @@ function openVendorInfo(){
   document.getElementById("vendorModal").style.display = "flex";
 }
 
-function openFotoStatus(payload){
+function openFotoStatus(payload, title){
   const gallery = document.getElementById("fotoStatusContent");
+  document.getElementById("fotoStatusTitle").innerText = decodeURIComponent(title || "Foto Pelaporan");
   let fotos = [];
 
   try{
@@ -500,7 +501,7 @@ function openFotoStatus(payload){
   gallery.innerHTML = fotos.map(function(url){
     return `<img src="${url}" alt="Foto Pelaporan">`;
   }).join("");
-  
+
   document.getElementById("fotoStatusModal").style.display = "flex";
 }
 
@@ -585,7 +586,7 @@ if(!token){
 <div id="fotoStatusModal" class="modal" onclick="overlayCloseModal(event,'fotoStatusModal')">
   <div class="modal-content photo-modal-content">
     <span class="close-btn" onclick="closeModal('fotoStatusModal')">&times;</span>
-    <h3>Foto Pelaporan</h3>
+    <h3 id="fotoStatusTitle">Foto Pelaporan</h3>
     <div id="fotoStatusContent" class="foto-gallery"></div>
   </div>
 </div>

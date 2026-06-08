@@ -101,6 +101,12 @@ padding:12px;
 border-bottom:1px solid #eee;
 }
 
+th.center-col,
+td.center-col{
+text-align:center;
+vertical-align:middle;
+}
+
 tr:hover{
 background:#f8f8f8;
 }
@@ -336,13 +342,13 @@ if(role !== "admin"){
 <th>Pelapor</th>
 <th>Cabang</th>
 <th>Aset</th>
-<th>Deskripsi</th>
-<th>Foto</th>
-<th>Penawaran Vendor</th>
-<th>Status</th>
+<th class="center-col">Deskripsi</th>
+<th class="center-col">Foto</th>
+<th class="center-col">Penawaran Vendor</th>
+<th class="center-col">Status</th>
 <th>Vendor</th>
-<th>Update</th>
-<th>Action</th>
+<th class="center-col">Update</th>
+<th class="center-col">Action</th>
 </tr>
 </thead>
 <tbody>
@@ -535,13 +541,13 @@ function renderTable(data){
     <td>${row.nama||"-"}</td>
     <td>${row.departemen||"-"}</td>
     <td>${row.aset||"-"}</td>
-    <td><button onclick="showDescription('${encodeURIComponent(row.deskripsi||"")}')">Lihat</button></td>
-    <td>${renderFotoButton(row.foto)}</td>
-    <td>${renderFotoButton(row.penawaran)}</td>
-    <td><span class="status ${statusClass}">${status}</span></td>
+    <td class="center-col"><button onclick="showDescription('${encodeURIComponent(row.deskripsi||"")}')">Lihat</button></td>
+    <td class="center-col">${renderFotoButton(row.foto)}</td>
+    <td class="center-col">${renderFotoButton(row.penawaran)}</td>
+    <td class="center-col"><span class="status ${statusClass}">${status}</span></td>
     <td>${row.vendor||"-"}</td>
-    <td>${formatTanggalIndonesia(row.update)}</td>
-    <td>
+    <td class="center-col">${formatTanggalIndonesia(row.update)}</td>
+    <td class="center-col">
    <button ${disabled} onclick="openEditModal('${encodeURIComponent(row.id||"")}','${encodeURIComponent(status)}','${encodeURIComponent(row.catatan||"")}','${encodeURIComponent(row.vendor||"")}','${encodeURIComponent(row.estimasi||"")}')">
     ${status==="Done"?"Close":"Edit"}
     </button>

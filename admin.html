@@ -182,6 +182,7 @@ max-height:70vh;
 object-fit:contain;
 border-radius:10px;
 background:white;
+cursor:pointer;
 }
 
 .foto-nav{
@@ -421,11 +422,11 @@ Maintenance Asset Management System
 <div id="fotoModal" class="modal" onclick="overlayClose(event,'fotoModal')">
   <div class="modal-content foto-modal-content">
     <span class="close-btn" onclick="closeModal('fotoModal')">&times;</span>
-    <h3>Penawaran Vendor</h3>
+    <h3>Foto Laporan</h3>
 
     <div class="foto-viewer">
       <button type="button" id="fotoPrevBtn" class="foto-nav prev" onclick="changeFoto(-1)">&#8249;</button>
-      <img id="fotoContent" alt="Foto Laporan">
+      <img id="fotoContent" alt="Foto Laporan" onclick="openActiveFotoInNewTab()">
       <button type="button" id="fotoNextBtn" class="foto-nav next" onclick="changeFoto(1)">&#8250;</button>
     </div>
     <div id="fotoCounter" class="foto-counter"></div>
@@ -664,6 +665,11 @@ function renderActiveFoto(){
   counter.innerText = activeFotos.length > 1 ? (activeFotoIndex + 1) + " / " + activeFotos.length : "";
   prevBtn.disabled = activeFotos.length <= 1;
   nextBtn.disabled = activeFotos.length <= 1;
+}
+
+function openActiveFotoInNewTab(){
+  if(!activeFotos.length) return;
+  window.open(activeFotos[activeFotoIndex], "_blank", "noopener");
 }
 
 function changeFoto(step){

@@ -132,7 +132,13 @@ const cabang = document.getElementById("cabang").value.trim();
 const aset = document.getElementById("aset").value.trim();
 const kategori = document.getElementById("kategori").value;
 const deskripsi = document.getElementById("deskripsi").value.trim();
-const files = Array.from(document.getElementById("foto").files || []);
+const files = [
+document.getElementById("foto1").files[0],
+document.getElementById("foto2").files[0],
+document.getElementById("foto3").files[0]
+].filter(function(file){
+return !!file;
+});
 
 
 // =============================
@@ -155,11 +161,6 @@ return resetButton();
 
 if(files.length < 1){
 alert("Foto wajib diupload");
-return resetButton();
-}
-
-if(files.length > 3){
-alert("Upload maksimal 3 foto");
 return resetButton();
 }
 

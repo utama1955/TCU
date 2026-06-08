@@ -39,11 +39,11 @@ return `
   <div class="history-date">${formatTanggalIndonesia(item.tanggal)}</div>
   <div class="history-action">${safeText(item.action)}</div>
   <div class="history-meta">Status: ${safeText(item.status)}</div>
-  ${cabang !== "-" ? `<div class="history-meta">Cabang: ${cabang}</div>` : ""}
-  ${kategori !== "-" ? `<div class="history-meta">Kategori: ${kategori}</div>` : ""}
+  ${cabang !== "-" ? `<div class="history-meta">Cabang : ${cabang}</div>` : ""}
+  ${kategori !== "-" ? `<div class="history-meta">Kategori : ${kategori}</div>` : ""}
   ${note !== "-" ? `<div class="history-text">${note}</div>` : ""}
-  ${vendor !== "-" ? `<div class="history-meta">Vendor: ${vendor}</div>` : ""}
-  ${estimasi !== "-" ? `<div class="history-meta">Estimasi: ${estimasi}</div>` : ""}
+  ${vendor !== "-" ? `<div class="history-meta">Vendor : ${vendor}</div>` : ""}
+  ${estimasi !== "-" ? `<div class="history-meta">Estimasi : ${estimasi}</div>` : ""}
   ${details !== "-" ? `<div class="history-meta">${details}</div>` : ""}
 </div>
 `;

@@ -243,7 +243,7 @@ if(!token){
 
 <label style="margin-top:10px; display:block;">Deskripsi Kerusakan</label>
 <textarea id="deskripsi" placeholder="Jelaskan tentang kerusakan yang ingin dilaporkan"></textarea>
-<label style="margin-top:10px; display:block;">Upload Foto</label>
+<label style="margin-top:10px; display:block;">Upload Foto <small>(maksimal 3 foto)</small></label>
 <input type="file" id="foto" multiple accept="image/*">
 
 <button type="button" id="btnKirim" onclick="kirimLaporan()">
@@ -284,9 +284,8 @@ border-radius:5px;
 
     <p style="margin-top:15px; font-size:14px; line-height:1.6;">
       <strong>PENTING:</strong><br>
-      Laporan Anda akan otomatis muncul di menu Cek Status.<br>
-      Silakan simpan tiket laporan untuk melihat riwayat laporan Anda.<br>
-      Menu "Cek Status" menampilkan semua laporan yang belum selesai.
+      Laporan Anda akan muncul otomatis di menu Cek Status.<br>
+      Silakan pantau update laporan melalui menu tersebut.
     </p>
 
   </div>

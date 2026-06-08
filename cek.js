@@ -44,6 +44,49 @@ return "-";
 return `<button type="button" class="inline-action" onclick="openFotoStatus('${encodeURIComponent(foto)}')">Lihat Foto</button>`;
 }
 
+function copyTicketId(event, ticketId){
+if(event){
+event.stopPropagation();
+}
+
+const button = event ? event.currentTarget : null;
+const originalText = button ? button.textContent : "";
+
+function showCopied(){
+if(button){
+button.textContent = "Copied";
+button.classList.add("copied");
+setTimeout(function(){
+button.textContent = originalText || "Copy";
+button.classList.remove("copied");
+}, 1200);
+}
+}
+
+if(navigator.clipboard && window.isSecureContext){
+navigator.clipboard.writeText(ticketId).then(showCopied).catch(function(){
+fallbackCopyTicket(ticketId);
+showCopied();
+});
+return;
+}
+
+fallbackCopyTicket(ticketId);
+showCopied();
+}
+
+function fallbackCopyTicket(ticketId){
+const input = document.createElement("input");
+input.value = ticketId;
+input.setAttribute("readonly", "");
+input.style.position = "fixed";
+input.style.left = "-9999px";
+document.body.appendChild(input);
+input.select();
+document.execCommand("copy");
+document.body.removeChild(input);
+}
+
 function renderHistoryItem(item){
 const note = safeText(item.note);
 const vendor = safeText(item.vendor);
@@ -136,7 +179,10 @@ return `
 <div class="ticket-list-item" id="ticket-${ticketId}">
   <div class="ticket-list-header" onclick="toggleTicketDetail('${ticketId}')">
     <div class="ticket-list-info">
-      <div class="ticket-list-id">#${ticketId}</div>
+      <div class="ticket-id-row">
+        <div class="ticket-list-id">#${ticketId}</div>
+        <button type="button" class="copy-ticket-btn" onclick="copyTicketId(event, '${ticketId}')">Copy</button>
+      </div>
       <div class="ticket-list-meta">
         <span>📦 ${safeText(ticket.aset)}</span>
         <span>🏢 ${safeText(ticket.departemen)}</span>

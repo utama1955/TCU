@@ -135,27 +135,62 @@ animation:fadeIn 0.2s ease-in-out;
 }
 
 .foto-modal-content{
-max-width:760px;
+max-width:420px;
 padding:20px;
 }
 
-.foto-gallery{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-gap:12px;
-max-height:72vh;
-overflow:auto;
-padding-right:4px;
+.foto-viewer{
+position:relative;
+display:flex;
+align-items:center;
+justify-content:center;
 margin-top:12px;
 }
 
-.foto-gallery img
+.foto-viewer img{
 width:100%;
-max-height:320px;
+max-height:70vh;
 object-fit:contain;
 border-radius:10px;
-border:1px solid #dce5e8;
 background:white;
+}
+
+.foto-nav{
+position:absolute;
+top:50%;
+transform:translateY(-50%);
+width:36px;
+height:36px;
+border-radius:50%;
+background:rgba(44,83,100,0.9);
+color:white;
+border:none;
+font-size:22px;
+font-weight:bold;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:0;
+}
+
+.foto-nav.prev{
+left:8px;
+}
+
+.foto-nav.next{
+right:8px;
+}
+
+.foto-nav:disabled{
+display:none;
+}
+
+.foto-counter{
+margin-top:10px;
+font-size:13px;
+font-weight:700;
+color:#2c5364;
+text-align:center;
 }
   
 @keyframes fadeIn{
@@ -363,14 +398,16 @@ Maintenance Asset Management System
 
 <!-- MODAL FOTO -->
 <div id="fotoModal" class="modal" onclick="overlayClose(event,'fotoModal')">
-  <div class="modal-content">
+  <div class="modal-content foto-modal-content">
     <span class="close-btn" onclick="closeModal('fotoModal')">&times;</span>
     <h3>Foto Laporan</h3>
 
-    <div id="fotoContent" class="foto-gallery"></div>
-      <img id="fotoContent" 
-           alt="Foto Laporan">
+    <div class="foto-viewer">
+      <button type="button" id="fotoPrevBtn" class="foto-nav prev" onclick="changeFoto(-1)">&#8249;</button>
+      <img id="fotoContent" alt="Foto Laporan">
+      <button type="button" id="fotoNextBtn" class="foto-nav next" onclick="changeFoto(1)">&#8250;</button>
     </div>
+    <div id="fotoCounter" class="foto-counter"></div>
 
   </div>
 </div>
@@ -381,6 +418,8 @@ Maintenance Asset Management System
 let allTickets = [];
 let visibleCount = 20; // default tampil 20
 let isSavingEdit = false;
+let activeFotos = [];
+let activeFotoIndex = 0;
 
 function goBack(){
   window.location.href="index.html";
@@ -578,10 +617,47 @@ function showFoto(payload){
     alert("Foto tidak tersedia");
     return;
   }
-  document.getElementById("fotoContent").innerHTML = fotos.map(url => {
-    return `<img src="${url}" alt="Foto Laporan">`;
-  }).join("");
+
+  activeFotos = fotos;
+  activeFotoIndex = 0;
+  renderActiveFoto();
   document.getElementById("fotoModal").style.display = "flex";
+}
+
+function renderActiveFoto(){
+  const img = document.getElementById("fotoContent");
+  const counter = document.getElementById("fotoCounter");
+  const prevBtn = document.getElementById("fotoPrevBtn");
+  const nextBtn = document.getElementById("fotoNextBtn");
+
+  if(!activeFotos.length){
+    img.removeAttribute("src");
+    counter.innerText = "";
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+    return;
+  }
+
+  img.src = activeFotos[activeFotoIndex];
+  counter.innerText = activeFotos.length > 1 ? (activeFotoIndex + 1) + " / " + activeFotos.length : "";
+  prevBtn.disabled = activeFotos.length <= 1;
+  nextBtn.disabled = activeFotos.length <= 1;
+}
+
+function changeFoto(step){
+  if(activeFotos.length <= 1) return;
+
+  activeFotoIndex += step;
+
+  if(activeFotoIndex < 0){
+    activeFotoIndex = activeFotos.length - 1;
+  }
+
+  if(activeFotoIndex >= activeFotos.length){
+    activeFotoIndex = 0;
+  }
+
+  renderActiveFoto();
 }
   
 function openEditModal(ticket,status,catatan,vendor,estimasi){

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History Laporan</title>
+<link rel="icon" type="image/png" href="icon.png">
+
+<style>
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:flex-start;
+padding:32px 15px;
+color:#15262d;
+}
+
+.container{
+background:white;
+width:100%;
+max-width:720px;
+border-radius:10px;
+box-shadow:0 18px 42px rgba(0,0,0,0.32);
+overflow:hidden;
+}
+
+.page-title{
+margin:0;
+padding:22px 24px 18px;
+background:#2c5364;
+color:white;
+font-size:21px;
+text-align:center;
+}
+
+.content{
+padding:24px;
+}
+
+.field-label{
+display:block;
+font-size:13px;
+font-weight:700;
+color:#244f60;
+margin-bottom:6px;
+}
+
+input{
+width:100%;
+padding:14px;
+border-radius:8px;
+border:1px solid #c8d4d9;
+font-size:14px;
+text-transform:uppercase;
+}
+
+input:focus{
+border-color:#2c5364;
+outline:none;
+box-shadow:0 0 0 3px rgba(44,83,100,0.16);
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:12px;
+border-radius:8px;
+border:0;
+font-size:14px;
+font-weight:700;
+cursor:pointer;
+background:#2c5364;
+color:white;
+transition:0.2s;
+}
+
+button:hover{
+background:#203a43;
+transform:translateY(-1px);
+}
+
+button:disabled{
+background:#bdc3c7;
+cursor:not-allowed;
+transform:none;
+}
+
+.back-btn{
+background:#6c757d;
+}
+
+.result{

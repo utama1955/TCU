@@ -15,14 +15,75 @@ return text
 
 
 // ========================================
-// UPLOAD FOTO KE CLOUDINARY
+// KOMPRES DAN UPLOAD FOTO KE CLOUDINARY
 // ========================================
+function compressFoto(file){
+return new Promise(function(resolve, reject){
+const reader = new FileReader();
+
+reader.onload = function(event){
+const img = new Image();
+
+img.onload = function(){
+const maxSize = 1280;
+let width = img.width;
+let height = img.height;
+
+if(width > height && width > maxSize){
+height = Math.round((height * maxSize) / width);
+width = maxSize;
+}else if(height > maxSize){
+width = Math.round((width * maxSize) / height);
+height = maxSize;
+}
+
+const canvas = document.createElement("canvas");
+canvas.width = width;
+canvas.height = height;
+
+const ctx = canvas.getContext("2d");
+ctx.fillStyle = "#ffffff";
+ctx.fillRect(0, 0, width, height);
+ctx.drawImage(img, 0, 0, width, height);
+
+canvas.toBlob(function(blob){
+if(!blob){
+reject(new Error("Gagal kompres foto"));
+return;
+}
+
+const compressedFile = new File(
+[blob],
+file.name.replace(/\.[^.]+$/, "") + ".jpg",
+{ type:"image/jpeg" }
+);
+
+resolve(compressedFile);
+}, "image/jpeg", 0.7);
+};
+
+img.onerror = function(){
+reject(new Error("Format foto tidak bisa diproses"));
+};
+
+img.src = event.target.result;
+};
+
+reader.onerror = function(){
+reject(new Error("Foto tidak bisa dibaca"));
+};
+
+reader.readAsDataURL(file);
+});
+}
+
 async function uploadFoto(file){
 
 if(!file) return null;
 
+const compressedFile = await compressFoto(file);
 const formData = new FormData();
-formData.append("file", file);
+formData.append("file", compressedFile);
 formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
 try{
@@ -71,7 +132,7 @@ const cabang = document.getElementById("cabang").value.trim();
 const aset = document.getElementById("aset").value.trim();
 const kategori = document.getElementById("kategori").value;
 const deskripsi = document.getElementById("deskripsi").value.trim();
-const file = document.getElementById("foto").files[0];
+const files = Array.from(document.getElementById("foto").files || []);
 
 
 // =============================
@@ -92,13 +153,22 @@ alert("Deskripsi minimal 10 karakter");
 return resetButton();
 }
 
-if(!file){
+if(files.length < 1){
 alert("Foto wajib diupload");
 return resetButton();
 }
 
-if(file.size > 2 * 1024 * 1024){
-alert("Ukuran foto maksimal 2MB");
+if(files.length > 3){
+alert("Upload maksimal 3 foto");
+return resetButton();
+}
+
+const invalidFile = files.find(function(file){
+return !file.type || file.type.indexOf("image/") !== 0;
+});
+
+if(invalidFile){
+alert("File lampiran harus berupa foto/gambar");
 return resetButton();
 }
 
@@ -106,13 +176,21 @@ return resetButton();
 // =============================
 // UPLOAD FOTO
 // =============================
-hasil.innerHTML = "Upload foto...";
+hasil.innerHTML = "Mengompres dan upload foto 1/" + files.length + "...";
 
-const fotoURL = await uploadFoto(file);
+const fotoURLs = [];
+
+for(let i = 0; i < files.length; i++){
+hasil.innerHTML = "Mengompres dan upload foto " + (i + 1) + "/" + files.length + "...";
+
+const fotoURL = await uploadFoto(files[i]);
 
 if(!fotoURL){
 hasil.innerHTML = "<span style='color:red;'>Gagal upload foto</span>";
 return resetButton();
+}
+
+fotoURLs.push(fotoURL);
 }
 
 
@@ -129,7 +207,7 @@ formData.append("cabang", cleanInput(cabang));
 formData.append("aset", cleanInput(aset));
 formData.append("kategori", kategori);
 formData.append("deskripsi", cleanInput(deskripsi));
-formData.append("foto", fotoURL);
+formData.append("foto", JSON.stringify(fotoURLs));
 formData.append("client_time", new Date().toISOString());
 
 const response = await fetch(API_URL,{

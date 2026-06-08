@@ -598,7 +598,7 @@ function renderFotoButton(value){
     return "-";
   }
 
-  const label = fotos.length > 1 ? "Lihat " + fotos.length : "Lihat";
+  const label = fotos.length > 1 ? "Lihat [ " + fotos.length + " foto]" : "Lihat";
   const payload = encodeURIComponent(JSON.stringify(fotos));
 
   return `<button onclick="showFoto('${payload}')">${label}</button>`;

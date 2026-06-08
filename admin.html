@@ -50,6 +50,29 @@ border-radius:6px;
 cursor:pointer;
 }
 
+.admin-back-btn{
+width:34px;
+height:34px;
+border-radius:50%;
+border:none;
+background:#426878;
+color:white;
+font-size:26px;
+font-weight:800;
+line-height:1;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:0 2px 2px 0;
+cursor:pointer;
+transition:background 0.2s ease, transform 0.2s ease;
+}
+
+.admin-back-btn:hover{
+background:#345766;
+transform:translateX(-1px);
+}
+
 .content{
 padding:25px;
 overflow-x:auto;
@@ -281,20 +304,8 @@ if(role !== "admin"){
 
 <div style="display:flex;align-items:center;gap:15px;">
 
-<button onclick="goBack()" 
-style="
-background:transparent;
-border:none;
-color:white;
-font-size:22px;
-cursor:pointer;
-padding:0;
-transition:0.2s;
-"
-onmouseover="this.style.opacity='0.7'"
-onmouseout="this.style.opacity='1'"
->
-◀
+<button type="button" class="admin-back-btn" onclick="goBack()" aria-label="Kembali">
+‹
 </button>
 
 <h2 style="margin:0;">Admin Panel - Maintenance Aset</h2>

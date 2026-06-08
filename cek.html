@@ -351,13 +351,21 @@ font-size:13px;
 }
 
 .photo-modal-content{
-max-width:420px;
+max-width:760px;
 }
 
-#fotoStatusContent{
-display:block;
-width:100%;
+.foto-gallery{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:12px;
 max-height:72vh;
+overflow:auto;
+padding-right:4px;
+}
+
+.foto-gallery img{
+width:100%;
+max-height:320px;
 object-fit:contain;
 border-radius:8px;
 border:1px solid #dce5e8;
@@ -479,9 +487,20 @@ function openVendorInfo(){
   document.getElementById("vendorModal").style.display = "flex";
 }
 
-function openFotoStatus(url){
-  const img = document.getElementById("fotoStatusContent");
-  img.src = decodeURIComponent(url);
+function openFotoStatus(payload){
+  const gallery = document.getElementById("fotoStatusContent");
+  let fotos = [];
+
+  try{
+    fotos = JSON.parse(decodeURIComponent(payload));
+  }catch(error){
+    fotos = [decodeURIComponent(payload)];
+  }
+
+  gallery.innerHTML = fotos.map(function(url){
+    return `<img src="${url}" alt="Foto Pelaporan">`;
+  }).join("");
+  
   document.getElementById("fotoStatusModal").style.display = "flex";
 }
 
@@ -567,7 +586,7 @@ if(!token){
   <div class="modal-content photo-modal-content">
     <span class="close-btn" onclick="closeModal('fotoStatusModal')">&times;</span>
     <h3>Foto Pelaporan</h3>
-    <img id="fotoStatusContent" alt="Foto Pelaporan">
+    <div id="fotoStatusContent" class="foto-gallery"></div>
   </div>
 </div>
 

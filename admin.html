@@ -393,6 +393,9 @@ Maintenance Asset Management System
 <label>Estimasi Selesai</label>
 <input id="edit_estimasi" placeholder="Contoh: 3 hari kerja">
 
+<label>Penawaran Vendor</label>
+<input type="file" id="edit_penawaran" accept="image/*">
+
   
 <button class="save-btn" onclick="saveEdit()">Save</button>
 </div>
@@ -670,6 +673,77 @@ function changeFoto(step){
 
   renderActiveFoto();
 }
+
+function compressFoto(file){
+  return new Promise(function(resolve, reject){
+    const reader = new FileReader();
+
+    reader.onload = function(event){
+      const img = new Image();
+
+      img.onload = function(){
+        const maxSize = 1280;
+        let width = img.width;
+        let height = img.height;
+
+        if(width > height && width > maxSize){
+          height = Math.round((height * maxSize) / width);
+          width = maxSize;
+        }else if(height > maxSize){
+          width = Math.round((width * maxSize) / height);
+          height = maxSize;
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+
+        canvas.toBlob(function(blob){
+          if(!blob){
+            reject(new Error("Gagal kompres foto penawaran"));
+            return;
+          }
+
+          resolve(new File([blob], file.name.replace(/\.[^.]+$/, "") + ".jpg", { type:"image/jpeg" }));
+        }, "image/jpeg", 0.7);
+      };
+
+      img.onerror = function(){
+        reject(new Error("Format foto penawaran tidak bisa diproses"));
+      };
+
+      img.src = event.target.result;
+    };
+
+    reader.onerror = function(){
+      reject(new Error("Foto penawaran tidak bisa dibaca"));
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadPenawaran(file){
+  if(!file) return "";
+
+  const compressedFile = await compressFoto(file);
+  const formData = new FormData();
+  formData.append("file", compressedFile);
+  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+  const response = await fetch(CLOUDINARY_URL, {
+    method:"POST",
+    body:formData
+  });
+
+  const data = await response.json();
+  return data.secure_url || "";
+}
   
 function openEditModal(ticket,status,catatan,vendor,estimasi){
   const ticketValue = decodeURIComponent(ticket || "");
@@ -684,6 +758,7 @@ function openEditModal(ticket,status,catatan,vendor,estimasi){
   document.getElementById("edit_catatan").value=decodeURIComponent(catatan || "");
   document.getElementById("edit_vendor").value=decodeURIComponent(vendor || "");
   document.getElementById("edit_estimasi").value=decodeURIComponent(estimasi || "");
+  document.getElementById("edit_penawaran").value="";
   document.getElementById("editModal").style.display="flex";
 }
 
@@ -714,6 +789,27 @@ async function saveEdit(){
   editFields.forEach(field => field.disabled = true);
 
 try{
+  const penawaranFile = document.getElementById("edit_penawaran").files[0];
+  let penawaranUrl = "";
+
+  if(penawaranFile){
+    if(!penawaranFile.type || penawaranFile.type.indexOf("image/") !== 0){
+      alert("File penawaran harus berupa foto/gambar.");
+      resetSaveButton();
+      return;
+    }
+
+    saveBtn.innerText = "Upload penawaran...";
+    penawaranUrl = await uploadPenawaran(penawaranFile);
+
+    if(!penawaranUrl){
+      alert("Gagal upload penawaran vendor. Silakan coba lagi.");
+      resetSaveButton();
+      return;
+    }
+  }
+
+  saveBtn.innerText = "Menyimpan...";
 
   const formData=new FormData();
   formData.append("action","updateTicket");
@@ -723,6 +819,7 @@ try{
   formData.append("catatan",document.getElementById("edit_catatan").value);
   formData.append("vendor",document.getElementById("edit_vendor").value);
   formData.append("estimasi",document.getElementById("edit_estimasi").value);
+  formData.append("penawaran",penawaranUrl);
 
 
   const res=await fetch(API_URL,{method:"POST",body:formData});

@@ -34,7 +34,7 @@ if(status === "Pending") return "status-pending";
 return "status-open";
 }
 
-function renderPhotoButton(url){
+function renderPhotoButton(url, title){
 const fotos = parseFotoList(url);
 
 if(fotos.length === 0){
@@ -43,8 +43,9 @@ return "-";
 
 const label = fotos.length > 1 ? "Lihat " + fotos.length + " Foto" : "Lihat Foto";
 const payload = encodeURIComponent(JSON.stringify(fotos));
+const modalTitle = encodeURIComponent(title || "Foto Pelaporan");
 
-return `<button type="button" class="inline-action" onclick="openFotoStatus('${payload}')">${label}</button>`;
+return `<button type="button" class="inline-action" onclick="openFotoStatus('${payload}','${modalTitle}')">${label}</button>`;
 }
 
 function parseFotoList(value){
@@ -112,9 +113,9 @@ document.body.removeChild(input);
 
 function renderHistoryItem(item){
 const note = safeText(item.note);
-const vendor = safeText(item.vendor);
 const cabang = safeText(item.cabang);
 const kategori = safeText(item.kategori);
+const vendor = safeText(item.vendor);
 const estimasi = safeText(item.estimasi);
 const details = safeText(item.details);
 
@@ -192,8 +193,17 @@ const detailHTML = `
     </div>
     <div>
       <div class="label">Foto Pelaporan</div>
-      <div class="value">${renderPhotoButton(ticket.foto)}</div>
+      <div class="value">${renderPhotoButton(ticket.foto, "Foto Pelaporan")}</div>
     </div>
+    <div>
+      <div class="label">Penawaran Vendor</div>
+      <div class="value">${renderPhotoButton(ticket.penawaran, "Penawaran Vendor")}</div>
+    </div>
+  </div>
+
+  <div class="label">Histori Laporan</div>
+  <div class="history-list">
+    ${renderHistory(ticket.history)}
   </div>
 </div>
 `;

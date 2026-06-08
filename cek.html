@@ -370,6 +370,7 @@ object-fit:contain;
 border-radius:8px;
 border:1px solid #dce5e8;
 background:white;
+cursor:pointer;
 }
 
 .close-btn{
@@ -499,10 +500,14 @@ function openFotoStatus(payload, title){
   }
 
   gallery.innerHTML = fotos.map(function(url){
-    return `<img src="${url}" alt="Foto Pelaporan">`;
+    return `<img src="${url}" alt="Foto Pelaporan" onclick="openImageInNewTab('${encodeURIComponent(url)}')">`;
   }).join("");
 
   document.getElementById("fotoStatusModal").style.display = "flex";
+}
+
+function openImageInNewTab(url){
+  window.open(decodeURIComponent(url), "_blank", "noopener");
 }
 
 function closeModal(id){

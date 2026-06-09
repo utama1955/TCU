@@ -150,6 +150,8 @@ background:rgba(0,0,0,0.55);
 justify-content:center;
 align-items:center;
 z-index:1000;
+padding:18px;
+box-sizing:border-box;
 }
 
 .modal-content{
@@ -168,6 +170,11 @@ max-width:420px;
 padding:20px;
 }
 
+.edit-modal-content{
+max-height:88vh;
+overflow-y:auto;
+}
+  
 .foto-viewer{
 position:relative;
 display:flex;
@@ -377,7 +384,7 @@ Maintenance Asset Management System
 
 <!-- MODAL EDIT -->
 <div id="editModal" class="modal" onclick="overlayClose(event,'editModal')">
-<div class="modal-content foto-modal-content">
+<div class="modal-content foto-modal-content edit-modal-content">
 <span class="close-btn" onclick="closeModal('editModal')">&times;</span>
 <h3>Edit Ticket</h3>
 
@@ -865,7 +872,7 @@ try{
     resetSaveButton();
     closeModal('editModal');
     alert("Update ticket berhasil disimpan.");
-    loadData();
+    window.location.reload();
     return;
   }else{
     alert(result.message || "Gagal menyimpan update ticket. Silakan coba lagi.");

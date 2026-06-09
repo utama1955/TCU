@@ -80,6 +80,49 @@ overflow-x:auto;
 
 .filter-box{
 margin-bottom:15px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:15px;
+flex-wrap:wrap;
+}
+
+.filter-left{
+display:flex;
+align-items:center;
+gap:4px;
+}
+
+.search-box{
+position:relative;
+width:220px;
+max-width:100%;
+}
+
+.search-box input{
+width:100%;
+height:30px;
+padding:6px 34px 6px 12px;
+border:1px solid #333;
+border-radius:18px;
+box-sizing:border-box;
+font-size:13px;
+outline:none;
+}
+
+.search-box input:focus{
+border-color:#2c5364;
+box-shadow:0 0 0 2px rgba(44,83,100,0.15);
+}
+
+.search-icon{
+position:absolute;
+right:10px;
+top:50%;
+transform:translateY(-50%);
+font-size:14px;
+color:#111;
+pointer-events:none;
 }
 
 table{
@@ -174,7 +217,7 @@ padding:20px;
 max-height:88vh;
 overflow-y:auto;
 }
-  
+
 .foto-viewer{
 position:relative;
 display:flex;
@@ -333,14 +376,21 @@ if(role !== "admin"){
 <div class="content">
 
 <div class="filter-box">
-<label><strong>Filter Status:</strong></label>
-<select id="filterStatus" onchange="applyFilter()">
-<option value="All">All</option>
-<option value="Waiting">Waiting</option>
-<option value="Pending">Pending</option>
-<option value="On Progress">On Progress</option>
-<option value="Done">Done</option>
-</select>
+<div class="filter-left">
+  <label><strong>Filter Status:</strong></label>
+  <select id="filterStatus" onchange="applyFilter()">
+  <option value="All">All</option>
+  <option value="Waiting">Waiting</option>
+  <option value="Pending">Pending</option>
+  <option value="On Progress">On Progress</option>
+  <option value="Done">Done</option>
+  </select>
+</div>
+
+<div class="search-box">
+  <input type="search" id="searchInput" placeholder="Cari..." oninput="applyFilter()">
+  <span class="search-icon">&#128269;</span>
+</div>
 </div>
 
 <table id="tabel">
@@ -499,12 +549,30 @@ async function loadData(){
 
 function getFilteredTickets(){
   const statusFilter = document.getElementById("filterStatus").value;
+  const keyword = (document.getElementById("searchInput").value || "").trim().toLowerCase();
+  let filteredTickets = allTickets;
 
-  if(statusFilter === "All"){
-    return allTickets;
+  if(statusFilter !== "All"){
+    filteredTickets = filteredTickets.filter(row => (row.status || "Waiting") === statusFilter);
   }
 
-  return allTickets.filter(row => (row.status || "Waiting") === statusFilter);
+  if(!keyword){
+    return filteredTickets;
+  }
+
+  return filteredTickets.filter(function(row){
+    const searchableText = [
+      row.id,
+      row.nama,
+      row.departemen,
+      row.aset,
+      row.vendor
+    ].map(function(value){
+      return String(value || "").toLowerCase();
+    }).join(" ");
+
+    return searchableText.indexOf(keyword) >= 0;
+  });
 }
 
 function applyFilter(){
@@ -630,7 +698,7 @@ function renderFotoButton(value){
     return "-";
   }
 
-  const label = fotos.length > 1 ? "" + fotos.length + " Foto" : "Lihat";
+  const label = fotos.length + " Foto";
   const payload = encodeURIComponent(JSON.stringify(fotos));
 
   return `<button onclick="showFoto('${payload}')">${label}</button>`;
@@ -834,7 +902,7 @@ try{
 
   const penawaranUrls = [];
 
-    for(let i = 0; i < penawaranFiles.length; i++){
+  for(let i = 0; i < penawaranFiles.length; i++){
     saveBtn.innerText = "Upload penawaran " + (i + 1) + "/" + penawaranFiles.length + "...";
     const penawaranUrl = await uploadPenawaran(penawaranFiles[i]);
 
@@ -843,6 +911,7 @@ try{
       resetSaveButton();
       return;
     }
+
     penawaranUrls.push(penawaranUrl);
   }
 

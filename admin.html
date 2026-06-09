@@ -401,8 +401,10 @@ Maintenance Asset Management System
 <label>Estimasi Selesai</label>
 <input id="edit_estimasi" placeholder="Contoh: 3 hari kerja">
 
-<label>Penawaran Vendor</label>
-<input type="file" id="edit_penawaran" accept="image/*">
+<label>Penawaran Vendor <small>(maksimal 3 foto)</small></label>
+<input type="file" id="edit_penawaran1" accept="image/*">
+<input type="file" id="edit_penawaran2" accept="image/*" style="margin-top:8px;">
+<input type="file" id="edit_penawaran3" accept="image/*" style="margin-top:8px;">
 
   
 <button class="save-btn" onclick="saveEdit()">Save</button>
@@ -772,7 +774,9 @@ function openEditModal(ticket,status,catatan,vendor,estimasi){
   document.getElementById("edit_catatan").value=decodeURIComponent(catatan || "");
   document.getElementById("edit_vendor").value=decodeURIComponent(vendor || "");
   document.getElementById("edit_estimasi").value=decodeURIComponent(estimasi || "");
-  document.getElementById("edit_penawaran").value="";
+  document.getElementById("edit_penawaran1").value="";
+  document.getElementById("edit_penawaran2").value="";
+  document.getElementById("edit_penawaran3").value="";
   document.getElementById("editModal").style.display="flex";
 }
 
@@ -803,24 +807,36 @@ async function saveEdit(){
   editFields.forEach(field => field.disabled = true);
 
 try{
-  const penawaranFile = document.getElementById("edit_penawaran").files[0];
-  let penawaranUrl = "";
+  const penawaranFiles = [
+    document.getElementById("edit_penawaran1").files[0],
+    document.getElementById("edit_penawaran2").files[0],
+    document.getElementById("edit_penawaran3").files[0]
+  ].filter(function(file){
+    return !!file;
+  });
 
-  if(penawaranFile){
-    if(!penawaranFile.type || penawaranFile.type.indexOf("image/") !== 0){
-      alert("File penawaran harus berupa foto/gambar.");
-      resetSaveButton();
-      return;
-    }
+  const invalidPenawaran = penawaranFiles.find(function(file){
+    return !file.type || file.type.indexOf("image/") !== 0;
+  });
 
-    saveBtn.innerText = "Upload penawaran...";
-    penawaranUrl = await uploadPenawaran(penawaranFile);
+  if(invalidPenawaran){
+    alert("File penawaran harus berupa foto/gambar.");
+    resetSaveButton();
+    return;
+  }
+
+  const penawaranUrls = [];
+
+    for(let i = 0; i < penawaranFiles.length; i++){
+    saveBtn.innerText = "Upload penawaran " + (i + 1) + "/" + penawaranFiles.length + "...";
+    const penawaranUrl = await uploadPenawaran(penawaranFiles[i]);
 
     if(!penawaranUrl){
       alert("Gagal upload penawaran vendor. Silakan coba lagi.");
       resetSaveButton();
       return;
     }
+    penawaranUrls.push(penawaranUrl);
   }
 
   saveBtn.innerText = "Menyimpan...";
@@ -833,7 +849,7 @@ try{
   formData.append("catatan",document.getElementById("edit_catatan").value);
   formData.append("vendor",document.getElementById("edit_vendor").value);
   formData.append("estimasi",document.getElementById("edit_estimasi").value);
-  formData.append("penawaran",penawaranUrl);
+  formData.append("penawaran",penawaranUrls.length ? JSON.stringify(penawaranUrls) : "");
 
 
   const res=await fetch(API_URL,{method:"POST",body:formData});

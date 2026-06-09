@@ -302,7 +302,9 @@ async function login() {
         }, 800);
     }
 } else {
-      status.innerText = "Username atau password salah / Akun tidak aktif";
+      const message = data.message || "Username atau password salah / Akun tidak aktif";
+      status.innerText = message;
+      alert(message);
     }
   } catch (error) {
     status.innerText = "Koneksi ke database gagal";

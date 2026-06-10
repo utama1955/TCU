@@ -481,7 +481,7 @@ Maintenance Asset Management System
 <div id="fotoModal" class="modal" onclick="overlayClose(event,'fotoModal')">
   <div class="modal-content foto-modal-content">
     <span class="close-btn" onclick="closeModal('fotoModal')">&times;</span>
-    <h3>Foto Laporan</h3>
+    <h3 id="fotoModalTitle">Foto Laporan</h3>
 
     <div class="foto-viewer">
       <button type="button" id="fotoPrevBtn" class="foto-nav prev" onclick="changeFoto(-1)">&#8249;</button>
@@ -620,8 +620,8 @@ function renderTable(data){
     <td>${row.departemen||"-"}</td>
     <td>${row.aset||"-"}</td>
     <td class="center-col"><button onclick="showDescription('${encodeURIComponent(row.deskripsi||"")}')">Lihat</button></td>
-    <td class="center-col">${renderFotoButton(row.foto)}</td>
-    <td class="center-col">${renderFotoButton(row.penawaran)}</td>
+    <td class="center-col">${renderFotoButton(row.foto, "Foto Laporan")}</td>
+    <td class="center-col">${renderFotoButton(row.penawaran, "Penawaran Vendor")}</td>
     <td class="center-col"><span class="status ${statusClass}">${status}</span></td>
     <td>${row.vendor||"-"}</td>
     <td class="center-col">${formatTanggalIndonesia(row.update)}</td>
@@ -691,7 +691,7 @@ function parseFotoList(value){
   return [foto];
 }
 
-function renderFotoButton(value){
+function renderFotoButton(value, title){
   const fotos = parseFotoList(value);
 
   if(fotos.length === 0){
@@ -700,12 +700,14 @@ function renderFotoButton(value){
 
   const label = fotos.length + " Foto";
   const payload = encodeURIComponent(JSON.stringify(fotos));
+  const modalTitle = encodeURIComponent(title || "Foto Laporan");
 
-  return `<button onclick="showFoto('${payload}')">${label}</button>`;
+  return `<button onclick="showFoto('${payload}','${modalTitle}')">${label}</button>`;
 }
   
-function showFoto(payload){
+function showFoto(payload, title){
   let fotos = [];
+  document.getElementById("fotoModalTitle").innerText = decodeURIComponent(title || "Foto Laporan");
 
   try{
     fotos = JSON.parse(decodeURIComponent(payload));

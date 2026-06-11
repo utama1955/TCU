@@ -825,17 +825,66 @@ async function uploadPenawaran(file){
   if(!file) return "";
 
   const compressedFile = await compressFoto(file);
-  const formData = new FormData();
-  formData.append("file", compressedFile);
-  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
-  const response = await fetch(CLOUDINARY_URL, {
+  try{
+    const r2URL = await uploadPenawaranR2(compressedFile);
+
+    if(r2URL){
+      return r2URL;
+    }
+  }catch(error){
+    if(error && error.message === "SESSION_EXPIRED"){
+      alert("Session berakhir. Silakan login ulang.");
+      localStorage.clear();
+      window.location.href = "login.html";
+      throw error;
+    }
+
+    console.warn("Upload R2 gagal, mencoba Cloudinary:", error);
+  }
+
+  return uploadPenawaranCloudinary(compressedFile);
+}
+
+async function uploadPenawaranR2(file){
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("token", localStorage.getItem("token") || "");
+
+  const response = await fetch(R2_UPLOAD_URL, {
     method:"POST",
     body:formData
   });
 
   const data = await response.json();
-  return data.secure_url || "";
+
+  if(data.session_expired){
+    throw new Error("SESSION_EXPIRED");
+  }
+
+  if(!response.ok || !data.success || !data.secure_url){
+    throw new Error(data.message || "Upload R2 gagal");
+  }
+
+  return data.secure_url;
+}
+
+async function uploadPenawaranCloudinary(file){
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+  try{
+    const response = await fetch(CLOUDINARY_URL, {
+      method:"POST",
+      body:formData
+    });
+
+    const data = await response.json();
+    return data.secure_url || "";
+  }catch(error){
+    return "";
+  }
 }
   
 function openEditModal(ticket,status,catatan,vendor,estimasi){

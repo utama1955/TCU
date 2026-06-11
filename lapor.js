@@ -15,7 +15,7 @@ return text
 
 
 // ========================================
-// KOMPRES DAN UPLOAD FOTO KE CLOUDINARY
+// KOMPRES DAN UPLOAD FOTO
 // ========================================
 function compressFoto(file){
 return new Promise(function(resolve, reject){
@@ -82,8 +82,53 @@ async function uploadFoto(file){
 if(!file) return null;
 
 const compressedFile = await compressFoto(file);
+
+try{
+const r2URL = await uploadFotoR2(compressedFile);
+
+if(r2URL){
+return r2URL;
+}
+}catch(error){
+if(error && error.message === "SESSION_EXPIRED"){
+alert("Session berakhir. Silakan login ulang.");
+localStorage.clear();
+window.location.href = "login.html";
+throw error;
+}
+
+console.warn("Upload R2 gagal, mencoba Cloudinary:", error);
+}
+
+return uploadFotoCloudinary(compressedFile);
+}
+
+async function uploadFotoR2(file){
 const formData = new FormData();
-formData.append("file", compressedFile);
+formData.append("file", file);
+formData.append("token", localStorage.getItem("token") || "");
+
+const response = await fetch(R2_UPLOAD_URL,{
+method:"POST",
+body:formData
+});
+
+const data = await response.json();
+
+if(data.session_expired){
+throw new Error("SESSION_EXPIRED");
+}
+
+if(!response.ok || !data.success || !data.secure_url){
+throw new Error(data.message || "Upload R2 gagal");
+}
+
+return data.secure_url;
+}
+
+async function uploadFotoCloudinary(file){
+const formData = new FormData();
+formData.append("file", file);
 formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
 try{

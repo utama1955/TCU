@@ -115,6 +115,8 @@
 
     if (!token) {
         window.location.href = "login.html";
+    } else if (localStorage.getItem("mustChangePassword") === "true") {
+        window.location.href = "reset-first-password.html";
     }
 
     const displayName = fullUsername.split('@')[0].toUpperCase();

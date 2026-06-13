@@ -175,13 +175,13 @@ font-size:18px;
 
 <h2>Login System</h2>
 
-<input id="username" placeholder="username">
+<input id="username" placeholder="username" autocomplete="username">
 
 <div style="position:relative;">
 
-<input id="password" type="password" placeholder="password" style="padding-right:45px;">
+<input id="password" type="password" placeholder="password" autocomplete="current-password" style="padding-right:45px;">
 
-<span onclick="togglePassword()" 
+<span onclick="togglePassword(this)" 
         style="
         position:absolute;
         right:12px;
@@ -203,7 +203,7 @@ font-size:18px;
 <label for="rememberUsername">Simpan username</label>
 </div>
 
-<button onclick="login()">Login</button>
+<button id="loginButton" onclick="login()">Login</button>
 
 <p id="status"></p>
 
@@ -263,60 +263,24 @@ function clearSavedUsername(){
   document.getElementById("rememberUsername").checked = false;
 }
         
+let isLoggingIn = false;
+
 async function login() {
-  const status = document.getElementById("status");
-  status.innerText = "Memproses login...";
+  if(isLoggingIn) return;
 
+  const status = document.getElementById("status");
+  const button = document.getElementById("loginButton");
   const username = document.getElementById("username").value.trim().toLowerCase();
-  const password = document.getElementById("password").value.trim();
+  const password = document.getElementById("password").value;
 
-  try {
-    const res = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`
-    });
-
-    const data = await res.json();
-
-    // Ganti bagian di dalam if(data.success) pada login.html
-    if (data.success) {
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("role", data.role);
-    localStorage.setItem("username", data.username);
-    
-    // Simpan atau hapus username berdasarkan checkbox
-    saveUsername(username);
-
-    // HANYA lempar ke reset sika backend bilang ini benar-benar login PERTAMA
-    if (data.first_login === true) {
-        document.getElementById("status").innerText = "Pengguna baru, silakan ganti password...";
-        setTimeout(() => {
-            window.location.href = "reset-first-password.html";
-        }, 800);
-    } else {
-        // Jika sudah pernah login (first_login: false), LANGSUNG ke index
-        document.getElementById("status").innerText = "Login Berhasil, mengalihkan...";
-        setTimeout(() => {
-            window.location.href = "index.html";
-        }, 800);
-    }
-} else {
-      const message = data.message || "Username atau password salah / Akun tidak aktif";
-      status.innerText = message;
-      alert(message);
-    }
-  } catch (error) {
-    status.innerText = "Koneksi ke database gagal";
-    console.error(error);
+  if(!username || !password){
+    status.innerText = "Username dan password wajib diisi";
+    return;
   }
-}
 
-async function handleLogin() {
-  const status = document.getElementById("status");
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-
+  isLoggingIn = true;
+  button.disabled = true;
+  button.innerText = "Memproses...";
   status.innerText = "Memproses login...";
 
   try {
@@ -329,44 +293,52 @@ async function handleLogin() {
     const data = await res.json();
 
     if (data.success) {
+      const mustChangePassword =
+        data.must_change_password === true || data.first_login === true;
+
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
       localStorage.setItem("username", data.username);
-      
-      // Simpan atau hapus username berdasarkan checkbox
+      localStorage.setItem("mustChangePassword", String(mustChangePassword));
       saveUsername(username);
 
-      // JIKA DATA LOGIN PERTAMA KALI (KOLOM LASTLOGIN KOSONG)
-      if (data.first_login) {
-        status.innerText = "Login pertama terdeteksi. Silakan ganti password.";
-        setTimeout(() => {
+      if (mustChangePassword) {
+        status.innerText = "Pengguna baru, silakan ganti password...";
+        setTimeout(function(){
           window.location.href = "reset-first-password.html";
-        }, 1000);
+        }, 800);
       } else {
-        // JIKA SUDAH PERNAH LOGIN SEBELUMNYA
-        status.innerText = "Selamat datang kembali!";
-        setTimeout(() => {
+        status.innerText = "Login berhasil, mengalihkan...";
+        setTimeout(function(){
           window.location.href = "index.html";
-        }, 1000);
+        }, 800);
       }
-    } else {
-      status.innerText = "Gagal: " + (data.message || "Akun tidak ditemukan");
+
+      return;
     }
-  } catch (e) {
-    status.innerText = "Error koneksi.";
+
+    const message = data.message || "Username atau password salah / Akun tidak aktif";
+    status.innerText = message;
+    alert(message);
+  } catch (error) {
+    status.innerText = "Koneksi ke database gagal";
+    console.error(error);
+  } finally {
+    isLoggingIn = false;
+    button.disabled = false;
+    button.innerText = "Login";
   }
 }
         
-function togglePassword(){
+function togglePassword(eye){
   const input = document.getElementById("password");
-  const eye = event.target;
 
   if(input.type === "password"){
     input.type = "text";
-    eye.innerText = "👁";
+    eye.innerText = "Tutup";
   }else{
     input.type = "password";
-    eye.innerText = "🚫";
+    eye.innerText = "Lihat";
   }
 }
 </script>

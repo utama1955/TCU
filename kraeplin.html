@@ -48,6 +48,50 @@
             overflow: hidden; /* Mencegah overlay keluar jalur */
         }
 
+        /* Tombol fullscreen pojok kanan atas */
+        .fullscreen-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: transform .12s ease, box-shadow .12s ease;
+            padding: 6px;
+        }
+        .fullscreen-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.16); }
+        .fullscreen-btn svg { width: 100%; height: 100%; fill: #222; }
+
+        /* Logo frame dan penyesuaian gambar agar pas ke frame */
+        .logo-frame {
+            background: var(--soft-bg);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 22px;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.02);
+        }
+        .logo-header img {
+            max-width: 320px;
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .hr-app-container .hr-inner {
+            padding-top: 6px; /* sedikit jarak dari tombol fullscreen */
+        }
+
         /* --- COUNTDOWN OVERLAY --- */
         .countdown-overlay {
             position: absolute;
@@ -87,15 +131,6 @@
         }
 
         /* --- KOMPONEN UTAMA --- */
-        .logo-header {
-            margin-bottom: 25px;
-        }
-        .logo-header img {
-            max-width: 280px;
-            width: 100%;
-            height: auto;
-        }
-
         .progress-container {
             width: 100%;
             height: 12px;
@@ -183,15 +218,6 @@
         .btn-lap { background: var(--utama-blue); color: white; }
         .btn-reset { background: #6c757d; color: white; }
 
-        .fullscreen-toggle {
-            margin-top: 25px;
-            font-size: 13px;
-            color: var(--utama-blue);
-            font-weight: 700;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
         .flash {
             animation: flash-animation 0.5s;
         }
@@ -200,6 +226,21 @@
             50% { background-color: #e8f6ef; }
             100% { background-color: white; }
         }
+
+        /* Tombol kembali ke menu di bawah */
+        .btn-back {
+            display: inline-block;
+            margin: 18px auto 0;
+            padding: 12px 20px;
+            background: #0f1720;
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            letter-spacing: 0.6px;
+            box-shadow: 0 6px 14px rgba(15,23,32,0.12);
+        }
+        .btn-back:active { transform: translateY(1px); }
 
         /* --- RESPONSIVE SMARTPHONE --- */
         @media (max-width: 500px) {
@@ -213,6 +254,8 @@
             .label-sm { font-size: 10px; }
             .countdown-text { font-size: 18px; }
             .countdown-number { font-size: 100px; }
+            .fullscreen-btn { width: 40px; height: 40px; top: 10px; right: 10px; }
+            .logo-frame { padding: 8px 10px; }
         }
     </style>
 </head>
@@ -231,45 +274,61 @@
 </script>
 
 <div class="hr-app-container" id="mainApp">
+    <button class="fullscreen-btn" id="btnFullscreenIcon" onclick="toggleFullscreen()" title="Buka Layar Penuh" aria-label="Buka Layar Penuh">
+        <!-- Ikon persegi sudut membulat (mirip lampiran) -->
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+            <g transform="translate(2,2) scale(0.8)">
+                <path d="M2 4C2 3.44772 2.44772 3 3 3H5C5.55228 3 6 3.44772 6 4C6 4.55228 5.55228 5 5 5H3C2.44772 5 2 4.55228 2 4Z"/>
+                <path d="M18 4C18 3.44772 18.4477 3 19 3H21C21.5523 3 22 3.44772 22 4C22 4.55228 21.5523 5 21 5H19C18.4477 5 18 4.55228 18 4Z"/>
+                <path d="M2 20C2 19.4477 2.44772 19 3 19H5C5.55228 19 6 19.4477 6 20C6 20.5523 5.55228 21 5 21H3C2.44772 21 2 20.5523 2 20Z"/>
+                <path d="M18 20C18 19.4477 18.4477 19 19 19H21C21.5523 19 22 19.4477 22 20C22 20.5523 21.5523 21 21 21H19C18.4477 21 18 20.5523 18 20Z"/>
+            </g>
+        </svg>
+    </button>
+
     <div class="countdown-overlay" id="countdownOverlay">
         <div class="countdown-text" id="countdownText">Persiapan</div>
         <div class="countdown-number" id="countdownNumber"></div>
     </div>
 
-    <div class="logo-header">
-        <img src="Banner Utama.png" alt="Logo Toko Cat Utama">
-    </div>
-
-    <div class="label-sm">Progress Tes Kraepelin</div>
-    <div class="progress-container">
-        <div class="progress-fill" id="progressBar"></div>
-    </div>
-
-    <div class="total-timer-box">
-        <span class="label-sm">Waktu Keseluruhan</span>
-        <div class="timer-main" id="totalTime">00:00:00</div>
-    </div>
-
-    <div class="stats-grid">
-        <div class="stat-card" id="lapCard">
-            <span class="label-sm">Lap</span>
-            <strong id="displayLap">1 / 50</strong>
+    <div class="hr-inner">
+        <div class="logo-header">
+            <div class="logo-frame">
+                <img src="Banner Utama.png" alt="Logo Toko Cat Utama">
+            </div>
         </div>
-        <div class="stat-card" id="timerCard">
-            <span class="label-sm">Waktu Lap</span>
-            <strong id="displayLapTimer">00:00</strong>
-            <span class="target-info" id="displayTarget">Target: 11.8s</span>
+
+        <div class="label-sm">Progress Tes Kraepelin</div>
+        <div class="progress-container">
+            <div class="progress-fill" id="progressBar"></div>
         </div>
-    </div>
 
-    <div class="button-grid">
-        <button class="btn-start" id="btnStart" onclick="startTes()">Start</button>
-        <button class="btn-pause" id="btnPause" onclick="pauseTes()" disabled>Jeda</button>
-        <button class="btn-lap" id="btnLap" onclick="manualNext()" disabled>Lap</button>
-        <button class="btn-reset" id="btnReset" onclick="resetTes()">Reset</button>
-    </div>
+        <div class="total-timer-box">
+            <span class="label-sm">Waktu Keseluruhan</span>
+            <div class="timer-main" id="totalTime">00:00:00</div>
+        </div>
 
-    <div class="fullscreen-toggle" onclick="toggleFullscreen()">Buka Layar Penuh</div>
+        <div class="stats-grid">
+            <div class="stat-card" id="lapCard">
+                <span class="label-sm">Lap</span>
+                <strong id="displayLap">1 / 50</strong>
+            </div>
+            <div class="stat-card" id="timerCard">
+                <span class="label-sm">Waktu Lap</span>
+                <strong id="displayLapTimer">00:00</strong>
+                <span class="target-info" id="displayTarget">Target: 11.8s</span>
+            </div>
+        </div>
+
+        <div class="button-grid">
+            <button class="btn-start" id="btnStart" onclick="startTes()">Start</button>
+            <button class="btn-pause" id="btnPause" onclick="pauseTes()" disabled>Jeda</button>
+            <button class="btn-lap" id="btnLap" onclick="manualNext()" disabled>Lap</button>
+            <button class="btn-reset" id="btnReset" onclick="resetTes()">Reset</button>
+        </div>
+
+        <a href="index.html" class="btn-back">KEMBALI KE MENU</a>
+    </div>
 </div>
 
 <script>
@@ -277,7 +336,7 @@
     function getDuration(lap) {
         if (lap >= 21 && lap <= 30) return 9800;
         if (lap >= 43 && lap <= 47) return 9800;
-        return 11800; 
+        return 11800;
     }
 
     let timerRef;
@@ -299,16 +358,16 @@
         window.speechSynthesis.cancel();
         const msg = new SpeechSynthesisUtterance(pesan);
         msg.voice = indonesianVoice;
-        msg.pitch = 1.3; 
-        msg.rate = 1.25;  
+        msg.pitch = 1.3;
+        msg.rate = 1.25;
         window.speechSynthesis.speak(msg);
     }
 
     // Fungsi Mulai yang menangani logika hitungan mundur
     function startTes() {
         if (!isRunning && !isCountingDown) {
-            if (!indonesianVoice) initVoice(); 
-            
+            if (!indonesianVoice) initVoice();
+
             // Jika ini awal tes (belum ada waktu berjalan), jalankan hitung mundur
             if (elapsedTime === 0 && currentLap === 1) {
                 mulaiHitunganMundur();
@@ -322,23 +381,23 @@
     function mulaiHitunganMundur() {
         isCountingDown = true;
         toggleButtons(true); // Matikan tombol agar tidak di-klik ganda
-        
+
         const overlay = document.getElementById('countdownOverlay');
         const textEl = document.getElementById('countdownText');
         const numEl = document.getElementById('countdownNumber');
-        
+
         // Tampilkan overlay
         overlay.classList.add('active');
         textEl.innerText = "Persiapkan diri Anda";
         numEl.innerText = "";
-        
+
         abaAba("Persiapkan diri Anda");
-        
+
         // Jeda 2 detik agar kalimat pertama selesai diucapkan
         setTimeout(() => {
             let hitung = 3;
             textEl.innerText = ""; // Kosongkan teks atas
-            
+
             const intervalHitung = setInterval(() => {
                 if (hitung > 0) {
                     numEl.innerText = hitung;
@@ -349,7 +408,7 @@
                     numEl.style.fontSize = window.innerWidth <= 500 ? "60px" : "80px"; // Sesuaikan ukuran untuk kata
                     numEl.innerText = "MULAI!";
                     abaAba("Mulai");
-                    
+
                     // Jeda sedikit sebelum menghilangkan overlay dan memulai timer asli
                     setTimeout(() => {
                         overlay.classList.remove('active');
@@ -359,8 +418,8 @@
                     }, 800);
                 }
             }, 1000); // Tiap 1 detik (1000 ms)
-            
-        }, 2000); 
+
+        }, 2000);
     }
 
     function jalankanTimer() {
@@ -400,16 +459,16 @@
         currentLap++;
         lapStartTime = currentTime;
         currentTarget = getDuration(currentLap);
-        
+
         document.getElementById('displayLap').innerText = `${currentLap} / ${totalLaps}`;
         document.getElementById('displayTarget').innerText = `Target: ${(currentTarget/1000).toFixed(1)}s`;
-        
+
         const progress = (currentLap / totalLaps) * 100;
         document.getElementById('progressBar').style.width = progress + "%";
 
         document.getElementById('lapCard').classList.add('flash');
         setTimeout(() => document.getElementById('lapCard').classList.remove('flash'), 500);
-        
+
         abaAba("Berikutnya");
     }
 
@@ -426,7 +485,7 @@
     }
 
     function resetTes() {
-        location.reload(); 
+        location.reload();
     }
 
     function formatTime(ms) {

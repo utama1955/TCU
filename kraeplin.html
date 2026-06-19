@@ -68,6 +68,7 @@
         }
         .fullscreen-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.16); }
         .fullscreen-btn svg { width: 100%; height: 100%; fill: #222; }
+        .fullscreen-btn img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
         /* Logo frame dan penyesuaian gambar agar pas ke frame */
         .logo-frame {
@@ -275,15 +276,8 @@
 
 <div class="hr-app-container" id="mainApp">
     <button class="fullscreen-btn" id="btnFullscreenIcon" onclick="toggleFullscreen()" title="Buka Layar Penuh" aria-label="Buka Layar Penuh">
-        <!-- Ikon persegi sudut membulat (mirip lampiran) -->
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-            <g transform="translate(2,2) scale(0.8)">
-                <path d="M2 4C2 3.44772 2.44772 3 3 3H5C5.55228 3 6 3.44772 6 4C6 4.55228 5.55228 5 5 5H3C2.44772 5 2 4.55228 2 4Z"/>
-                <path d="M18 4C18 3.44772 18.4477 3 19 3H21C21.5523 3 22 3.44772 22 4C22 4.55228 21.5523 5 21 5H19C18.4477 5 18 4.55228 18 4Z"/>
-                <path d="M2 20C2 19.4477 2.44772 19 3 19H5C5.55228 19 6 19.4477 6 20C6 20.5523 5.55228 21 5 21H3C2.44772 21 2 20.5523 2 20Z"/>
-                <path d="M18 20C18 19.4477 18.4477 19 19 19H21C21.5523 19 22 19.4477 22 20C22 20.5523 21.5523 21 21 21H19C18.4477 21 18 20.5523 18 20Z"/>
-            </g>
-        </svg>
+        <!-- Gunakan gambar fullscreen.png yang ditambahkan oleh pengguna -->
+        <img src="fullscreen.png" alt="Fullscreen">
     </button>
 
     <div class="countdown-overlay" id="countdownOverlay">

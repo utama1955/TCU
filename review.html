@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review Laporan</title>
+<link rel="icon" type="image/png" href="icon.png">
+
+<style>
+*{
+box-sizing:border-box;
+}
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:flex-start;
+padding:32px 15px;
+color:#15262d;
+}
+
+.container{
+background:white;
+width:100%;
+max-width:780px;
+border-radius:10px;
+box-shadow:0 18px 42px rgba(0,0,0,0.32);
+overflow:hidden;
+}
+
+.page-title{
+margin:0;
+padding:22px 24px 18px;
+background:#2c5364;
+color:white;
+font-size:21px;
+text-align:center;
+letter-spacing:0;
+}
+
+.content{
+padding:24px;
+}
+
+.page-subtitle{
+margin:0 0 18px;
+font-size:14px;
+line-height:1.5;
+color:#52666e;
+text-align:center;
+}
+
+.result{
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+.empty-state,
+.loading-box{
+background:#f7fafb;
+border:1px solid #e3ebee;
+border-radius:10px;
+padding:18px;
+text-align:center;
+color:#52666e;
+}
+
+.review-card{
+background:#f7fafb;
+border:1px solid #e3ebee;
+border-radius:10px;
+overflow:hidden;
+}
+
+.review-header{
+display:flex;
+justify-content:space-between;
+gap:14px;
+align-items:flex-start;
+padding:16px 18px;
+border-bottom:1px solid #e3ebee;
+}
+
+.ticket-id{
+font-size:16px;
+font-weight:800;
+color:#d94a35;
+line-height:1.25;
+word-break:break-word;
+}
+
+.status-done{
+display:inline-block;
+color:white;
+font-weight:bold;
+padding:5px 10px;
+border-radius:999px;
+font-size:12px;
+white-space:nowrap;
+background:#27ae60;
+}
+
+.review-body{
+padding:16px 18px 18px;
+}
+
+.meta-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px;
+margin-bottom:14px;
+}
+
+.label{
+font-weight:bold;
+color:#244f60;
+font-size:13px;
+margin-bottom:4px;
+}
+
+.value{
+font-size:14px;
+line-height:1.45;
+color:#13272f;
+}
+
+.rating-row{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin:8px 0 12px;
+}
+
+.rating-btn{
+width:42px;
+height:38px;
+border:1px solid #c8d4d9;
+border-radius:8px;
+background:white;
+color:#244f60;
+font-size:15px;
+font-weight:800;
+cursor:pointer;
+transition:0.2s;
+}
+
+.rating-btn:hover,
+.rating-btn.active{
+background:#f39c12;
+border-color:#f39c12;
+color:white;
+}
+
+textarea{
+width:100%;
+min-height:86px;
+resize:vertical;
+padding:12px;
+border:1px solid #c8d4d9;
+border-radius:8px;
+font-family:Arial, Helvetica, sans-serif;
+font-size:14px;
+line-height:1.45;
+}
+
+textarea:focus{
+border-color:#2c5364;
+outline:none;
+box-shadow:0 0 0 3px rgba(44,83,100,0.16);
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:12px;
+border-radius:8px;
+border:0;
+font-size:14px;
+font-weight:700;
+cursor:pointer;
+background:#2c5364;
+color:white;
+transition:0.2s;
+}
+
+button:hover{
+background:#203a43;
+transform:translateY(-1px);
+}
+
+button:disabled{
+background:#bdc3c7;
+cursor:not-allowed;
+transform:none;
+}
+
+.save-review-btn.saved{
+background:#27ae60;
+}
+
+.back-btn{
+background:#6c757d;
+}
+
+.review-note{
+margin-top:10px;
+padding:10px 12px;
+border-radius:8px;
+background:#eef3f5;
+color:#244f60;
+font-size:13px;
+font-weight:700;
+}
+
+a{
+display:block;
+text-decoration:none;
+}
+
+@media (max-width:560px){
+body{
+padding:20px 12px;
+}
+
+.content{
+padding:20px;
+}
+
+.review-header{
+flex-direction:column;
+}
+
+.meta-grid{
+grid-template-columns:1fr;
+}
+}
+</style>
+</head>
+
+<body>
+<script>
+const token = localStorage.getItem("token");
+
+if(!token){
+  alert("Silakan login terlebih dahulu");
+  window.location.href = "login.html";
+}else if(localStorage.getItem("mustChangePassword") === "true"){
+  window.location.href = "reset-first-password.html";
+}
+</script>
+
+<div class="container">
+  <h2 class="page-title">REVIEW LAPORAN</h2>
+
+  <div class="content">
+    <p class="page-subtitle">
+      Review hanya tersedia untuk laporan Anda yang sudah berstatus Done.
+    </p>
+
+    <div id="hasil" class="result"></div>
+
+    <a href="index.html">
+      <button class="back-btn">Kembali ke Menu Utama</button>
+    </a>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="review.js"></script>
+</body>
+</html>

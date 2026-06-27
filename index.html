@@ -168,6 +168,7 @@
             if (adminBox) adminBox.style.display = "block";
         }
 
+        showCachedBadges();
         loadNotificationBadges();
     });
 
@@ -185,18 +186,51 @@
                 return;
             }
 
-            if (role === "admin") {
-                setBadge("cekBadge", 0);
-                setBadge("panelAdminBadge", Number(data.admin_active_count || 0));
-            } else {
-                setBadge("cekBadge", Number(data.active_count || 0));
-                setBadge("panelAdminBadge", 0);
-            }
+            const counts = {
+                active: Number(data.active_count || 0),
+                adminActive: Number(data.admin_active_count || 0),
+                review: Number(data.review_count || 0),
+                savedAt: Date.now()
+            };
 
-            setBadge("reviewBadge", Number(data.review_count || 0));
+            saveBadgeCache(counts);
+            renderBadges(counts);
         } catch (error) {
             console.error(error);
         }
+    }
+
+    function getBadgeCacheKey() {
+        return "laporBoloBadgeCounts:" + (fullUsername || "unknown").toLowerCase();
+    }
+
+    function saveBadgeCache(counts) {
+        try {
+            localStorage.setItem(getBadgeCacheKey(), JSON.stringify(counts));
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function showCachedBadges() {
+        try {
+            const cached = JSON.parse(localStorage.getItem(getBadgeCacheKey()) || "null");
+            if (cached) renderBadges(cached);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function renderBadges(counts) {
+        if (role === "admin") {
+            setBadge("cekBadge", 0);
+            setBadge("panelAdminBadge", Number(counts.adminActive || 0));
+        } else {
+            setBadge("cekBadge", Number(counts.active || 0));
+            setBadge("panelAdminBadge", 0);
+        }
+
+        setBadge("reviewBadge", Number(counts.review || 0));
     }
 
     function setBadge(id, count) {

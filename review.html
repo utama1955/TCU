@@ -156,6 +156,15 @@ border-color:#f39c12;
 color:white;
 }
 
+.rating-btn:disabled{
+cursor:default;
+opacity:0.72;
+}
+
+.rating-btn:disabled:hover{
+transform:none;
+}
+
 textarea{
 width:100%;
 min-height:86px;
@@ -172,6 +181,12 @@ textarea:focus{
 border-color:#2c5364;
 outline:none;
 box-shadow:0 0 0 3px rgba(44,83,100,0.16);
+}
+
+textarea:disabled{
+background:#eef3f5;
+color:#52666e;
+cursor:not-allowed;
 }
 
 button{
@@ -215,6 +230,11 @@ background:#eef3f5;
 color:#244f60;
 font-size:13px;
 font-weight:700;
+}
+
+.review-note.locked{
+background:#f8f1df;
+color:#8a5a00;
 }
 
 a{

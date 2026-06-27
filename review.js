@@ -105,7 +105,7 @@ return `
     <div class="label">Deskripsi Kerusakan</div>
     <div class="value">${safeHtml(ticket.deskripsi)}</div>
 
-    <div class="label" style="margin-top:14px;">Rating</div>
+    <div class="label" style="margin-top:14px;">Seberapa puas pelayanan HR & GA?</div>
     <div class="rating-row">${ratingButtons}</div>
 
     <label class="label" for="note-${ticketId}">Keterangan Review</label>
@@ -169,7 +169,7 @@ const rating = Number(card ? card.dataset.rating : 0);
 const note = noteInput ? noteInput.value.trim() : "";
 
 if(!rating || rating < 1 || rating > 5){
-alert("Pilih rating 1 sampai 5 terlebih dahulu.");
+alert("Pilih rating kepuasan pelayanan HR & GA dari 1 sampai 5 terlebih dahulu.");
 return;
 }
 

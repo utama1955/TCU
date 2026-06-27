@@ -46,11 +46,31 @@ const ticketId = safeText(ticket.id);
 const existingRating = Number(ticket.review_rating || 0);
 const existingNote = safeText(ticket.review_note) === "-" ? "" : safeText(ticket.review_note);
 const alreadyReviewed = existingRating > 0;
+const isAdmin = localStorage.getItem("role") === "admin";
+const isLocked = isAdmin || alreadyReviewed;
+const disabledAttr = isLocked ? " disabled" : "";
 
 const ratingButtons = [1,2,3,4,5].map(function(value){
 const activeClass = value === existingRating ? " active" : "";
-return `<button type="button" class="rating-btn${activeClass}" data-rating="${value}" onclick="setRating('${ticketId}', ${value})">${value}</button>`;
+const clickAttr = isLocked ? "" : ` onclick="setRating('${ticketId}', ${value})"`;
+return `<button type="button" class="rating-btn${activeClass}" data-rating="${value}"${clickAttr}${disabledAttr}>${value}</button>`;
 }).join("");
+
+let reviewInfo = "";
+let actionButton = "";
+
+if(isAdmin){
+reviewInfo = alreadyReviewed
+? `<div class="review-note">Review pelapor: ${existingRating}/5</div>`
+: `<div class="review-note locked">Belum ada review dari pelapor.</div>`;
+}else if(alreadyReviewed){
+reviewInfo = `<div class="review-note locked">Review sudah dikirim dan tidak bisa diubah.</div>`;
+}else{
+actionButton = `
+    <button type="button" class="save-review-btn" id="save-${ticketId}" onclick="submitReview('${ticketId}')">
+      Simpan Review
+    </button>`;
+}
 
 return `
 <div class="review-card" id="review-${ticketId}" data-rating="${existingRating || ""}">
@@ -89,13 +109,10 @@ return `
     <div class="rating-row">${ratingButtons}</div>
 
     <label class="label" for="note-${ticketId}">Keterangan Review</label>
-    <textarea id="note-${ticketId}" placeholder="Tulis keterangan review untuk laporan ini...">${safeHtml(existingNote)}</textarea>
+    <textarea id="note-${ticketId}" placeholder="Tulis keterangan review untuk laporan ini..."${disabledAttr}>${safeHtml(existingNote)}</textarea>
 
-    ${alreadyReviewed ? `<div class="review-note">Review sebelumnya: ${existingRating}/5</div>` : ""}
-
-    <button type="button" class="save-review-btn${alreadyReviewed ? " saved" : ""}" id="save-${ticketId}" onclick="submitReview('${ticketId}')">
-      ${alreadyReviewed ? "Update Review" : "Simpan Review"}
-    </button>
+    ${reviewInfo}
+    ${actionButton}
   </div>
 </div>
 `;
@@ -187,6 +204,13 @@ window.location.href = "login.html";
 return;
 }
 
+if(result.already_reviewed){
+alert(result.message || "Review sudah pernah dikirim dan tidak bisa diubah.");
+button.textContent = "Review Terkunci";
+button.disabled = true;
+return;
+}
+
 if(!result.success){
 alert(result.message || "Review gagal disimpan.");
 button.textContent = originalText;
@@ -197,9 +221,8 @@ return;
 button.classList.add("saved");
 button.textContent = "Review Tersimpan";
 setTimeout(function(){
-button.textContent = "Update Review";
-button.disabled = false;
-}, 1200);
+loadReviewTickets();
+}, 900);
 }catch(error){
 console.error(error);
 alert("Review gagal disimpan. Silakan coba lagi.");

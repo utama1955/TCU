@@ -62,6 +62,32 @@
 
     button:hover { background: #203a43; transform: translateY(-2px); }
 
+    .menu-link {
+        display: block;
+        position: relative;
+        text-decoration: none;
+    }
+
+    .menu-badge {
+        display: none;
+        position: absolute;
+        top: 4px;
+        right: -7px;
+        min-width: 24px;
+        height: 24px;
+        padding: 0 7px;
+        border-radius: 999px;
+        background: #e74c3c;
+        color: white;
+        border: 2px solid white;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.24);
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 20px;
+        text-align: center;
+        z-index: 2;
+    }
+
     .admin-btn { background: #8e44ad; }
     .admin-btn:hover { background: #7d3c98; }
 
@@ -94,10 +120,16 @@
 
     <div id="userInfo">Memuat nama...</div>
 
-    <a href="lapor.html"><button>LAPOR KERUSAKAN</button></a>
-    <a href="cek.html"><button>CEK STATUS LAPORAN</button></a>
-    <a href="history.html"><button>HISTORY LAPORAN</button></a>
-    <a href="review.html"><button>REVIEW LAPORAN</button></a>
+    <a class="menu-link" href="lapor.html"><button>LAPOR KERUSAKAN</button></a>
+    <a class="menu-link" href="cek.html">
+        <button>CEK STATUS LAPORAN</button>
+        <span class="menu-badge" id="cekBadge">0</span>
+    </a>
+    <a class="menu-link" href="history.html"><button>HISTORY LAPORAN</button></a>
+    <a class="menu-link" href="review.html">
+        <button>REVIEW LAPORAN</button>
+        <span class="menu-badge" id="reviewBadge">0</span>
+    </a>
 
     <div id="adminSection" style="display:none;">
         <a href="kraeplin.html"><button class="kraeplin-btn">TIMER KRAEPLIN</button></a>
@@ -136,7 +168,42 @@
             const adminBox = document.getElementById("adminSection");
             if (adminBox) adminBox.style.display = "block";
         }
+
+        loadNotificationBadges();
     });
+
+    async function loadNotificationBadges() {
+        try {
+            const response = await fetch(
+                API_URL +
+                "?action=notificationCounts" +
+                "&token=" + encodeURIComponent(token)
+            );
+
+            const data = await response.json();
+
+            if (!data || data.success === false) {
+                return;
+            }
+
+            setBadge("cekBadge", Number(data.active_count || 0));
+            setBadge("reviewBadge", Number(data.review_count || 0));
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    function setBadge(id, count) {
+        const badge = document.getElementById(id);
+        if (!badge) return;
+
+        if (count > 0) {
+            badge.textContent = count > 99 ? "99+" : String(count);
+            badge.style.display = "inline-block";
+        } else {
+            badge.style.display = "none";
+        }
+    }
 
     function logout() {
         if (confirm("Apakah Anda yakin ingin keluar?")) {

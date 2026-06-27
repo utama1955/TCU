@@ -149,6 +149,7 @@ function renderTicketListItem(ticket){
 const statusText = safeText(ticket.status) === "-" ? "Waiting" : safeText(ticket.status);
 const statusClass = getStatusClass(statusText);
 const ticketId = safeText(ticket.id);
+const doneClass = statusText.toLowerCase() === "done" ? " ticket-done" : "";
 
 // Detail yang akan ditampilkan saat expand
 const detailHTML = `
@@ -209,7 +210,7 @@ const detailHTML = `
 `;
 
 return `
-<div class="ticket-list-item" id="ticket-${ticketId}">
+<div class="ticket-list-item${doneClass}" id="ticket-${ticketId}">
   <div class="ticket-list-header" onclick="toggleTicketDetail('${ticketId}')">
     <div class="ticket-list-info">
       <div class="ticket-id-row">
@@ -260,7 +261,7 @@ return;
 const tickets = Array.isArray(data.tickets) ? data.tickets : [];
 
 if(tickets.length === 0){
-hasil.innerHTML = `<div class='empty-state'>Tidak ada laporan aktif untuk akun ini.<br>Laporan dengan status Selesai tidak ditampilkan.</div>`;
+hasil.innerHTML = `<div class='empty-state'>Belum ada laporan untuk akun ini.</div>`;
 return;
 }
 

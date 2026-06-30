@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbyG_s-JU9zftq_OZTUoS8AG_LQQQpv0h3LmfFTJEDwvFtJEm1gCvjCh3UE_r1QCNnZ0pA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyW3FbLoN7i4ua1WN2sjGZ2GR0iUZsfKtx9EqNBwmrCw2kPPr9X4ZbKwEmJB0ykLl6GsA/exec";
 
 const R2_UPLOAD_URL = "https://tcu-image-upload.redminotee5190.workers.dev";
 

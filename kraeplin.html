@@ -265,18 +265,6 @@
     </style>
 </head>
 <body>
-<script>
-    // Permission / role guard
-    const kraeplinToken = localStorage.getItem("token");
-    const kraeplinRole = localStorage.getItem("role");
-
-    if (!kraeplinToken) {
-        window.location.href = "login.html";
-    } else if (kraeplinRole !== "admin") {
-        alert("Halaman ini hanya untuk admin.");
-        window.location.href = "index.html";
-    }
-</script>
 
 <div class="hr-app-container" id="mainApp">
     <button class="fullscreen-btn" id="btnFullscreenIcon" onclick="toggleFullscreen()" title="Buka Layar Penuh" aria-label="Buka Layar Penuh" aria-pressed="false">

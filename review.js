@@ -50,7 +50,7 @@ const isAdmin = localStorage.getItem("role") === "admin";
 const isLocked = isAdmin || alreadyReviewed;
 const disabledAttr = isLocked ? " disabled" : "";
 
-const ratingButtons = [⭐,⭐,⭐,⭐,⭐].map(function(value){
+const ratingButtons = [1,2,3,4,5].map(function(value){
 const activeClass = value === existingRating ? " active" : "";
 const clickAttr = isLocked ? "" : ` onclick="setRating('${ticketId}', ${value})"`;
 return `<button type="button" class="rating-btn${activeClass}" data-rating="${value}"${clickAttr}${disabledAttr}>${value}</button>`;
